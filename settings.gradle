@@ -1,0 +1,6 @@
+rootProject.name = 'marmot.sample'
+
+['marmot.api', 'marmot'].each {
+	include ":$it"
+	project(":$it").projectDir = file("../../$it")
+}
