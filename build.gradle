@@ -23,7 +23,8 @@ repositories {
 }
 
 dependencies {
-	compile project(':marmot.api')
+	compile 'etri:marmot.api:1.0'
+//	compile project(':marmot.api')
 }
 
 task sourceJar(type: Jar) {
