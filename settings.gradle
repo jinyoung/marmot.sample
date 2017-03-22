@@ -1,6 +1,12 @@
 rootProject.name = 'marmot.sample'
 
-['marmot.api', 'marmot'].each {
+def githubDir = file('../../../github')
+['utils'].each {
+	include ":$it"
+	project(":$it").projectDir = file("$githubDir/$it")
+}
+
+['marmot.api'].each {
 	include ":$it"
 	project(":$it").projectDir = file("../../$it")
 }

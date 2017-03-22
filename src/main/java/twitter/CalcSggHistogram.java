@@ -3,7 +3,7 @@ package twitter;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
-import marmot.optor.geo.SpatialRelationship;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.RemoteCatalog;
@@ -13,8 +13,8 @@ import marmot.remote.robj.RemoteCatalog;
  * @author Kang-Woo Lee (ETRI)
  */
 public class CalcSggHistogram {
-	private static final String OUTER_LAYER = "/social/tweets/clusters";
-	private static final String INNER_LAYER = "/admin/political/sgg/clusters";
+	private static final String LEFT_LAYER = "/social/tweets/clusters";
+	private static final String RIGHT_LAYER = "/admin/political/sgg/clusters";
 	private static final String OUTPUT_LAYER = "/tmp/social/tweets/result_emd";
 	
 	public static final void main(String... args) throws Exception {
@@ -25,9 +25,9 @@ public class CalcSggHistogram {
 		RemoteCatalog catalog = marmot.getCatalog();
 		
 		Program program = Program.builder()
-								.loadSpatialIndexJoin(SpatialRelationship.INTERSECTS,
-													OUTER_LAYER, INNER_LAYER,
-													"the_geom,id", "SIG_CD,SIG_KOR_NM")
+								.loadSpatialIndexJoin(LEFT_LAYER, RIGHT_LAYER,
+													SpatialRelation.INTERSECTS,
+													"left.{the_geom,id},right.{SIG_CD,SIG_KOR_NM}")
 								.groupBy("SIG_CD")
 									.taggedKeyColumns("the_geom,SIG_KOR_NM")
 									.count()

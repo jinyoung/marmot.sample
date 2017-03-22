@@ -1,6 +1,7 @@
 package vworld;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import marmot.Record;
 import marmot.RecordSchema;
@@ -12,7 +13,9 @@ import marmot.type.DataType;
  * @author Kang-Woo Lee (ETRI)
  */
 public class VWorldLog2DParser implements RecordTransform {
-	private static final Logger s_logger = Logger.getLogger(VWorldLog2DParser.class);
+	private static final long serialVersionUID = 1097145291233448853L;
+	
+	private static final Logger s_logger = LoggerFactory.getLogger(VWorldLog2DParser.class);
 	public static final RecordSchema SCHEMA = RecordSchema.builder()
 													.addColumn("req_host", DataType.STRING)
 													.addColumn("ts", DataType.DATETIME)

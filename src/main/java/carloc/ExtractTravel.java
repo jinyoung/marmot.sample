@@ -39,13 +39,11 @@ public class ExtractTravel {
 											.addColumn("wgs_y", DataType.DOUBLE)
 											.build();
 		
-		String schemaDef = "the_geom:point,hour:int";
-		String rtrans = "the_geom = ST_Point(wgs_x, wgs_y); hour = (ts/10000) % 100;";
-		
 		Program program = Program.builder()
 								.loadCsvFiles(INPUT, csvSchema)
 								.filter("status == " + STATUS)
-								.transform(schemaDef, rtrans, false)
+								.update("the_geom:point,hour:int",
+										"the_geom:ST_Point(wgs_x, wgs_y);hour=(ts/10000) % 100")
 								.project("the_geom,car_no,driver_id,hour")
 								.transformCRS("the_geom", "EPSG:4326", "EPSG:5186")
 								.reduceGeometryPrecision("the_geom", 2)

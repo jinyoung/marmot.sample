@@ -1,11 +1,10 @@
-package basic;
+package geom.join;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.optor.geo.SpatialRelationship;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.RemoteCatalog;
@@ -15,12 +14,10 @@ import marmot.support.DefaultRecord;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class IntersectsJoin {
-	private static final String RESULT = "tmp/sample/result";
-//	private static final String OUTER = "admin/cadastral/clusters";
-//	private static final String INNER = "admin/seoul_random/clusters";
-	private static final String OUTER = "transit/subway_stations/clusters";
-	private static final String INNER = "admin/political/sgg/clusters";
+public class SampleClipJoin {
+	private static final String RESULT = "tmp/result";
+	private static final String OUTER = "admin/cadastral_11/heap";
+	private static final String INNER = "admin/urban_area/clusters";
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -31,15 +28,13 @@ public class IntersectsJoin {
 		RemoteCatalog catalog = marmot.getCatalog();
 		
 		Program program = Program.builder()
-								.loadSpatialIndexJoin(SpatialRelationship.INTERSECTS,
-													OUTER, INNER, "*", "the_geom as the_geom2")
-								.intersection("the_geom", "the_geom2", "the_geom")
-								.project("*-{the_geom2}")
+								.loadLayer(OUTER)
+								.clipJoin("the_geom", INNER)
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 
 		catalog.deleteLayer(RESULT);
-		marmot.execute("intersects_join", program);
+		marmot.execute("clip_join", program);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		RecordSet rset = marmot.readLayer(RESULT);

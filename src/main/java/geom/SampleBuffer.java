@@ -1,11 +1,10 @@
-package basic;
+package geom;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.optor.geo.SpatialRelationship;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.RemoteCatalog;
@@ -15,11 +14,10 @@ import marmot.support.DefaultRecord;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SpatialJoin {
-	private static final String RESULT = "tmp/sample/result";
-	private static final String OUTER = "admin/buildings/clusters";
-	private static final String INNER = "admin/seoul_emd/clusters";
-
+public class SampleBuffer {
+	private static final String INPUT = "transit/subway_stations/heap";
+	private static final String RESULT = "tmp/result";
+	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -27,15 +25,16 @@ public class SpatialJoin {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		RemoteCatalog catalog = marmot.getCatalog();
-		
+
 		Program program = Program.builder()
-								.loadSpatialIndexJoin(SpatialRelationship.INTERSECTS,
-													OUTER, INNER, "*", "*-{the_geom}")
+								.loadLayer(INPUT)
+								.update("the_geom = ST_Buffer(the_geom, 50)")
+//								.buffer("the_geom", 50)
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 
 		catalog.deleteLayer(RESULT);
-		marmot.execute("spatial_join", program);
+		marmot.execute("buffer", program);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		RecordSet rset = marmot.readLayer(RESULT);

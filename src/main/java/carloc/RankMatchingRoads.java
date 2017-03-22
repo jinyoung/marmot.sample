@@ -4,7 +4,7 @@ import marmot.Program;
 import marmot.ProgramBuilder;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.optor.geo.SpatialRelationship;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.RemoteCatalog;
@@ -30,9 +30,9 @@ public class RankMatchingRoads {
 								.rank("count:D", "rank")
 								.build();
 		ProgramBuilder builder = Program.builder()
-										.loadSpatialIndexJoin(SpatialRelationship.INTERSECTS,
-															TRAVEL, ROAD, "the_geom,hour,car_no",
-															"LINK_ID")
+										.loadSpatialIndexJoin(TRAVEL, ROAD,
+													SpatialRelation.INTERSECTS,
+													"left.{the_geom,hour,car_no},right.{tLINK_ID}")
 										.groupBy("hour,car_no,LINK_ID").findAny()
 										.groupBy("hour,LINK_ID").count();
 		if ( MIN_COUNT > 0 ) {

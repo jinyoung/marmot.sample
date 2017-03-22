@@ -3,9 +3,12 @@ package demo;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
+import marmot.Record;
+import marmot.RecordSet;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.RemoteCatalog;
+import marmot.support.DefaultRecord;
 import utils.StopWatch;
 
 /**
@@ -14,7 +17,7 @@ import utils.StopWatch;
  */
 public class WeakFireDeathArea {
 	private static final String LAYER_HOSPITAL = "utility/hospitals";
-	private static final String LAYER_SEOUL = "utility/hospitals";
+	private static final String LAYER_SEOUL = "demo/demo_seoul";
 	private static final String LAYER_FIRE = "report/fire_death";
 	private static final String SRID = "EPSG:5186";
 	
@@ -51,7 +54,7 @@ public class WeakFireDeathArea {
 								.loadLayer(LAYER_FIRE)
 								.clipJoin("the_geom", LAYER_SEOUL)
 								.centroid("the_geom")
-								.clipJoin(null, "tmp/fire_death/far_seoul")
+								.clipJoin("the_geom", "tmp/fire_death/far_seoul")
 								.storeLayer("tmp/fire_death/weak_area", "the_geom", SRID)
 								.build();
 		catalog.deleteLayer("tmp/fire_death/weak_area");
@@ -60,7 +63,6 @@ public class WeakFireDeathArea {
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
 		
-/*
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		RecordSet rset = marmot.readLayer("tmp/fire_death/weak_area");
 		Record record = DefaultRecord.of(rset.getRecordSchema());
@@ -68,6 +70,5 @@ public class WeakFireDeathArea {
 		while ( ++count <= 10 && rset.next(record) ) {
 			System.out.println(record);
 		}
-*/
 	}
 }

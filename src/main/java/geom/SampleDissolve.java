@@ -1,4 +1,4 @@
-package basic;
+package geom;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -14,9 +14,9 @@ import marmot.support.DefaultRecord;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class Dissolve {
+public class SampleDissolve {
 	private static final String RESULT = "tmp/sample/result";
-	private static final String LAYER = "admin/cadastral/heap";
+	private static final String LAYER = "admin/cadastral_11/heap";
 	private static final int NPARTS = 151;
 	
 	public static final void main(String... args) throws Exception {
@@ -29,7 +29,7 @@ public class Dissolve {
 		
 		Program program = Program.builder()
 								.loadLayer(LAYER)
-								.transform("SD_SGG:string", "SD_SGG=INNB.substring(0,8)", false)
+								.update("SD_SGG:string", "SD_SGG=INNB.substring(0,8)")
 								.project("the_geom,SD_SGG")
 								.dissolve("SD_SGG", NPARTS)
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")

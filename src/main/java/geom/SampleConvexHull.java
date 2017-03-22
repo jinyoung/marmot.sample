@@ -1,10 +1,11 @@
-package basic;
+package geom;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
 import marmot.Record;
 import marmot.RecordSet;
+import marmot.optor.geo.AggregateFunction;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.RemoteCatalog;
@@ -14,9 +15,9 @@ import marmot.support.DefaultRecord;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class Buffer {
-	private static final String INPUT = "transit/subway_stations/heap";
-	private static final String RESULT = "tmp/sample/result";
+public class SampleConvexHull {
+	private static final String INPUT = "admin/workers/heap";
+	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -28,14 +29,14 @@ public class Buffer {
 
 		Program program = Program.builder()
 								.loadLayer(INPUT)
-								.buffer("the_geom", 50)
+								.aggregate(AggregateFunction.ConvexHull())
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 
 		catalog.deleteLayer(RESULT);
-		marmot.execute("buffer", program);
+		marmot.execute("convex_hull", program);
 		
-		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		// 결과에 포함된 모든 레코드를 읽어 화면에 출력시킨다.
 		RecordSet rset = marmot.readLayer(RESULT);
 		Record record = DefaultRecord.of(rset.getRecordSchema());
 		int count = 0;

@@ -22,7 +22,6 @@ repositories {
     }
 }
 
-println project(':marmot.api').projectDir
 dependencies {
 	compile project(':marmot.api')
 }
