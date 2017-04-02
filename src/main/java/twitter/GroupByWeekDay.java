@@ -28,7 +28,7 @@ public class GroupByWeekDay {
 		Program program = Program.builder()
 								.loadLayer(INPUT_LAYER)
 								.project("id,created_at")
-								.update("week_day:int", "week_day = ST_DTWeekDay(created_at)")
+								.transform("week_day:int", "week_day = ST_DTWeekDay(created_at)")
 								.groupBy("week_day").count()
 								.skip(0)
 								.storeAsCsv(OUTPUT_PATH)

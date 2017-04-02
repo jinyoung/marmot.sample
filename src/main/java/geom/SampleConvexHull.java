@@ -33,7 +33,7 @@ public class SampleConvexHull {
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 
-		catalog.deleteLayer(RESULT);
+		marmot.deleteLayer(RESULT);
 		marmot.execute("convex_hull", program);
 		
 		// 결과에 포함된 모든 레코드를 읽어 화면에 출력시킨다.

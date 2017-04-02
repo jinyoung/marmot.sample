@@ -8,6 +8,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import marmot.Program;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.catalog.LayerInfo;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.RemoteCatalog;
@@ -34,12 +35,12 @@ public class SampleIndexedRangeQuery {
 		Geometry key = GeoClientUtils.toPolygon(bounds);
 		
 		Program program = Program.builder()
-								.loadLayer(CADASTRAL, "intersects", key)
+								.loadLayer(CADASTRAL, SpatialRelation.INTERSECTS, key)
 								.project("the_geom,INNB")
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 
-		catalog.deleteLayer(RESULT);
+		marmot.deleteLayer(RESULT);
 		marmot.execute("sample_indexed_rangequery", program);
 	}
 }

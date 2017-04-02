@@ -36,11 +36,11 @@ public class FindByTopKUsers {
 		
 		
 		LayerInfo info = catalog.getLayerInfo(INPUT_LAYER);
-		catalog.deleteLayer(OUTPUT_LAYER);
+		marmot.deleteLayer(OUTPUT_LAYER);
 			
 		String userIdsStr = userIds.stream().collect(Collectors.joining(","));
-		String inializer = String.format("target_users = Lists.newArrayList(%s)", userIdsStr);
-		String pred = "target_users.contains(user_id)";
+		String inializer = String.format("$target_users = Lists.newArrayList(%s)", userIdsStr);
+		String pred = "$target_users.contains(user_id)";
 		Program program = Program.builder()
 								.loadLayer(INPUT_LAYER)
 								.filter(inializer, pred)

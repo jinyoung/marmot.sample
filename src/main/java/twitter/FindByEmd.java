@@ -8,6 +8,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.RemoteCatalog;
@@ -35,11 +36,11 @@ public class FindByEmd {
 		LayerInfo info = catalog.getLayerInfo(INPUT_LAYER);
 
 		// 프로그램 수행 이전에 기존 OUTPUT_LAYER을 제거시킨다.
-		catalog.deleteLayer(OUTPUT_LAYER);
+		marmot.deleteLayer(OUTPUT_LAYER);
 		
 		Program program = Program.builder()
 								// tweet 레이어를 읽어, 서초동 행정 영역과 겹치는 트위 레코드를 검색한다.
-								.loadLayer(INPUT_LAYER, "intersects", border)
+								.loadLayer(INPUT_LAYER, SpatialRelation.INTERSECTS, border)
 								.project("the_geom,id")
 								// 검색된 레코드를 'OUTPUT_LAYER' 레이어에 저장시킨다.
 								.storeLayer(OUTPUT_LAYER, "the_geom", info.getSRID())
@@ -90,7 +91,7 @@ public class FindByEmd {
 		}
 		finally {
 			// 생성된 임시 레이어를 삭제한다.
-			marmot.getCatalog().deleteLayer(tempLayerName);
+			marmot.deleteLayer(tempLayerName);
 		}
 	}
 }

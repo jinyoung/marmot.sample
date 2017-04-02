@@ -34,7 +34,7 @@ public class CalcSggHistogram {
 								.storeLayer(OUTPUT_LAYER, "the_geom", "EPSG:5186")
 								.build();
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
-		catalog.deleteLayer(OUTPUT_LAYER);
+		marmot.deleteLayer(OUTPUT_LAYER);
 		marmot.execute("calc_emd_histogram", program);
 	}
 }

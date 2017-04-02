@@ -37,7 +37,7 @@ public class WeakFireDeathArea {
 								.buffer("the_geom", 3000)
 								.storeLayer("tmp/fire_death/hospitals3000", "the_geom", SRID)
 								.build();
-		catalog.deleteLayer("tmp/fire_death/hospitals3000");
+		marmot.deleteLayer("tmp/fire_death/hospitals3000");
 		marmot.execute("demo_process0", program0);
 
 		// 서울시 지도에서 종합병원 3km 이내 영역과 겹치지 않은 영역을 계산한다.
@@ -46,7 +46,7 @@ public class WeakFireDeathArea {
 								.differenceJoin("the_geom", "tmp/fire_death/hospitals3000")
 								.storeLayer("tmp/fire_death/far_seoul", "the_geom", SRID)
 								.build();
-		catalog.deleteLayer("tmp/fire_death/far_seoul");
+		marmot.deleteLayer("tmp/fire_death/far_seoul");
 		marmot.execute("demo_process1", program1);
 
 		// 화재피해 영역 중에서 서울 읍면동과 겹치는 부분을 clip 하고, 각 피해 영역의 중심점을 구한다.
@@ -57,7 +57,7 @@ public class WeakFireDeathArea {
 								.clipJoin("the_geom", "tmp/fire_death/far_seoul")
 								.storeLayer("tmp/fire_death/weak_area", "the_geom", SRID)
 								.build();
-		catalog.deleteLayer("tmp/fire_death/weak_area");
+		marmot.deleteLayer("tmp/fire_death/weak_area");
 		marmot.execute("demo_process2", program2);
 		
 		watch.stop();

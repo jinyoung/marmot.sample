@@ -2,13 +2,11 @@ package geom.join;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import basic.SampleUtils;
 import marmot.Program;
-import marmot.Record;
-import marmot.RecordSet;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.RemoteCatalog;
-import marmot.support.DefaultRecord;
 
 /**
  * 
@@ -33,15 +31,10 @@ public class SampleClipJoin {
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 
-		catalog.deleteLayer(RESULT);
+		marmot.deleteLayer(RESULT);
 		marmot.execute("clip_join", program);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		RecordSet rset = marmot.readLayer(RESULT);
-		Record record = DefaultRecord.of(rset.getRecordSchema());
-		int count = 0;
-		while ( ++count <= 10 && rset.next(record) ) {
-			System.out.println(record);
-		}
+		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
 	}
 }

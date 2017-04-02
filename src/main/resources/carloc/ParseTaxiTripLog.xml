@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <descriptor>
 	<charset>utf-8</charset>
-	<drop_input_columns>true</drop_input_columns>
-	<defined_schema>
+	<update_schema>
 		<column name="the_geom" type="point"/>
 		<column name="car_no" type="string"/>
 		<column name="driver_id" type="int"/>
 		<column name="company" type="string"/>
 		<column name="status" type="byte"/>
-		<column name="ts" type="datetime"/>
-	</defined_schema>
+		<column name="ts" type="long"/>
+	</update_schema>
 	<initializer>
 		<script><![CDATA[
 			$pattern = ST_DTPattern('yyyyMMddHHmmss');
@@ -17,8 +16,7 @@
 	</initializer>
 	<script><![CDATA[
 		if ( text.startsWith("#") ) {
-			$failed = true;
-			return;
+			return false
 		}
 		
 		$parts = text.split(',');
@@ -28,6 +26,6 @@
 		driver_id = (int)$parts[8];
 		company = $parts[7];
 		status = (byte)$parts[6];
-		ts = ST_DTParse($parts[1], 'yyyyMMddHHmmss');
+		ts = ST_DTToMillis(ST_DTParseLE($parts[1], $pattern));
 	]]></script>
 </descriptor>

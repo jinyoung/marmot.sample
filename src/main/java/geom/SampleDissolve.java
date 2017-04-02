@@ -29,13 +29,13 @@ public class SampleDissolve {
 		
 		Program program = Program.builder()
 								.loadLayer(LAYER)
-								.update("SD_SGG:string", "SD_SGG=INNB.substring(0,8)")
+								.transform("SD_SGG:string", "SD_SGG=INNB.substring(0,8)")
 								.project("the_geom,SD_SGG")
 								.dissolve("SD_SGG", NPARTS)
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 
-		catalog.deleteLayer(RESULT);
+		marmot.deleteLayer(RESULT);
 		marmot.execute("dissolve", program);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

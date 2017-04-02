@@ -50,7 +50,7 @@ public class FindByDateTime {
 								.build();
 		
 		// 프로그램 수행 이전에 기존 OUTPUT_LAYER을 제거시킨다.
-		catalog.deleteLayer(OUTPUT_LAYER);
+		marmot.deleteLayer(OUTPUT_LAYER);
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
 		marmot.execute("find_by_datetime", program);
 		

@@ -5,7 +5,6 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.Program;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.RemoteCatalog;
 
 /**
  * 
@@ -21,18 +20,20 @@ public class SampleTransform {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
-		RemoteCatalog catalog = marmot.getCatalog();
 
 		Program program = Program.builder()
 								.loadLayer(INPUT)
-								.transform(b->b
-									.outputRecordSchema("AREA:double,STR:string")
-									.transformScript("AREA=ST_Area(the_geom);STR = KOR_SUB_NM+'['+OPE_MAN_ID+']'")
-								)
-								.storeAsCsv(RESULT)
+								.transform("the_geom:point,area:double,SIG_CD:int",
+											"area = ST_Area(the_geom);"
+											+ "the_geom = ST_Centroid(the_geom);"
+											+ "SIG_CD=Integer.parseInt(SIG_CD);"
+											+ "KOR_SUB_NM='Station(' + KOR_SUB_NM + ')'")
+								.project("the_geom,area,SIG_CD,KOR_SUB_NM")
+								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
-
-		catalog.deleteLayer(RESULT);
+		marmot.deleteLayer(RESULT);
 		marmot.execute("transform", program);
+		
+		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
 	}
 }

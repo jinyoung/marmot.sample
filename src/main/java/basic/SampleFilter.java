@@ -5,7 +5,6 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.Program;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.RemoteCatalog;
 
 /**
  * 
@@ -21,7 +20,6 @@ public class SampleFilter {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
-		RemoteCatalog catalog = marmot.getCatalog();
 
 		Program program = Program.builder()
 								.loadLayer(INPUT)
@@ -30,7 +28,9 @@ public class SampleFilter {
 								.storeAsCsv(RESULT)
 								.build();
 
-		catalog.deleteLayer(RESULT);
+		marmot.deleteLayer(RESULT);
 		marmot.execute("transform", program);
+		
+//		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
 	}
 }

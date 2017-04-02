@@ -29,7 +29,7 @@ public class VWorldLog2DParser implements RecordTransform {
 	public VWorldLog2DParser() { }
 	
 	@Override
-	public RecordSchema getRecordSchema() {
+	public RecordSchema getOutputRecordSchema() {
 		return SCHEMA;
 	}
 
