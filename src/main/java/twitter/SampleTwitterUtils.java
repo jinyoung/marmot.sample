@@ -6,14 +6,12 @@ import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.remote.MarmotClient;
-import twitter.SampleUtils.EmdInfo;
-import twitter.SampleUtils.SggInfo;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleUtils {
+public class SampleTwitterUtils {
 	private static final String SGG_LAYER = "/admin/political/sgg/heap";
 	private static final String EMD_LAYER = "/admin/political/emd/heap";
 	

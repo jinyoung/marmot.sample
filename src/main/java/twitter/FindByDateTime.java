@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import basic.SampleUtils;
 import marmot.Program;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.RemoteCatalog;
 
 /**
  * 본 클래스는 트위트 레이어를 읽어서, 2015.12.30 부터  2016.01.2이전까지의 트윗을
@@ -29,7 +29,6 @@ public class FindByDateTime {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
-		RemoteCatalog catalog = marmot.getCatalog();
 
 		// 2015.12.25 부터  2015.12.26 이전까지 tweets을 검색하기 위한 조건 문자열 생성
 		String initPred = String.format("$begin=ST_DTFromString('%s'); "
@@ -54,15 +53,6 @@ public class FindByDateTime {
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
 		marmot.execute("find_by_datetime", program);
 		
-/*
-		// 프로그램 수행으로 생성된 결과 레이어를 접근하기 위한 RecordSet객체 획득. 
-		RecordSet rset = marmot.readLayer(OUTPUT_LAYER);
-		
-		// RecordSet에 포함된 모든 레코드를 읽어 화면에 출력시킨다.
-		Record record = DefaultRecord.of(rset.getRecordSchema());
-		while ( rset.next(record) ) {
-			System.out.println(record);
-		}
-*/
+		SampleUtils.printLayerPrefix(marmot, OUTPUT_LAYER, 10);
 	}
 }
