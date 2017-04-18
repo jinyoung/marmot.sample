@@ -7,13 +7,11 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.collect.Lists;
 
-import marmot.Program;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.RecordSets;
 import marmot.geo.GeoFunctions;
-import marmot.optor.geo.AggregateFunction;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.support.DefaultRecord;
