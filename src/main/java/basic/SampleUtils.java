@@ -20,4 +20,15 @@ public class SampleUtils {
 			System.out.println(record);
 		}
 	}
+	
+	public static void printFilePrefix(MarmotClient marmot, String path, int count) {
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		RecordSet rset = marmot.readMarmotFile(path);
+		Record record = DefaultRecord.of(rset.getRecordSchema());
+		
+		int i = 0;
+		while ( ++i <= count && rset.next(record) ) {
+			System.out.println(record);
+		}
+	}
 }

@@ -1,12 +1,15 @@
 package basic;
 
+import static marmot.optor.geo.AggregateFunction.AVG;
+import static marmot.optor.geo.AggregateFunction.MAX;
+import static marmot.optor.geo.AggregateFunction.MIN;
+import static marmot.optor.geo.AggregateFunction.STDDEV;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
-import marmot.optor.geo.AggregateFunction;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.RemoteCatalog;
 
 /**
  * 
@@ -25,11 +28,12 @@ public class SampleAggregate {
 
 		Program program = Program.builder()
 								.loadLayer(INPUT)
-								.aggregate(AggregateFunction.MAX("POP"), AggregateFunction.MIN("POP"),
-											AggregateFunction.STDDEV("POP"))
-								.storeAsCsv(RESULT)
+								.aggregate(MAX("POP"), MIN("POP"), AVG("POP"), STDDEV("POP"))
+								.store(RESULT)
 								.build();
-		marmot.deleteLayer(RESULT);
+		marmot.deleteFile(RESULT);
 		marmot.execute("transform", program);
+		
+		SampleUtils.printFilePrefix(marmot, RESULT, 10);
 	}
 }
