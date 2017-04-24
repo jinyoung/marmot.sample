@@ -7,7 +7,6 @@ import marmot.Record;
 import marmot.RecordSet;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.RemoteCatalog;
 import marmot.support.DefaultRecord;
 
 /**
@@ -25,7 +24,6 @@ public class SampleDissolve {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
-		RemoteCatalog catalog = marmot.getCatalog();
 		
 		Program program = Program.builder()
 								.loadLayer(LAYER)
