@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.google.common.base.Splitter;
 
-import marmot.geo.MapTile;
+import marmot.type.MapTile;
 
 
 /**
