@@ -1,14 +1,14 @@
 package geom;
 
+import static marmot.optor.geo.AggregateFunction.ConvexHull;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.optor.geo.AggregateFunction;
 import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.RemoteCatalog;
 import marmot.support.DefaultRecord;
 
 /**
@@ -25,11 +25,10 @@ public class SampleConvexHull {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
-		RemoteCatalog catalog = marmot.getCatalog();
 
 		Program program = Program.builder()
 								.loadLayer(INPUT)
-								.aggregate(AggregateFunction.ConvexHull())
+								.aggregate(ConvexHull("the_geom"))
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 

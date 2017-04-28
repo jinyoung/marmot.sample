@@ -1,5 +1,7 @@
 package basic;
 
+import java.util.Map;
+
 import marmot.Record;
 import marmot.RecordSet;
 import marmot.remote.MarmotClient;
@@ -17,7 +19,9 @@ public class SampleUtils {
 		
 		int i = 0;
 		while ( ++i <= count && rset.next(record) ) {
-			System.out.println(record);
+			Map<String,Object> values = record.toMap();
+			values.remove("the_geom");
+			System.out.println(values);
 		}
 	}
 	
