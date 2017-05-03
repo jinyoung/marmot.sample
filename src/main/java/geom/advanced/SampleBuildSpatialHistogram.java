@@ -37,7 +37,7 @@ public class SampleBuildSpatialHistogram {
 														envl.getHeight() / 50);
 		
 		Program program = Program.builder()
-								.loadFishnetGridFile(envl, 1, cellSize)
+								.loadFishnetGridFile(envl, cellSize, 1)
 								.buildSpatialHistogram("the_geom", TEMP_CLUSTER,
 													HistogramCounter.COUNT, null, "count")
 								.transform("cell_pos:string", "cell_pos = cell_pos.toString()")
