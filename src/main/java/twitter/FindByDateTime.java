@@ -8,8 +8,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import basic.SampleUtils;
 import marmot.Program;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 
 /**
  * 본 클래스는 트위트 레이어를 읽어서, 2015.12.30 부터  2016.01.2이전까지의 트윗을

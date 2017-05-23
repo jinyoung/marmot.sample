@@ -1,5 +1,7 @@
 package lx;
 
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -7,9 +9,10 @@ import com.vividsolutions.jts.geom.Envelope;
 import basic.SampleUtils;
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import utils.DimensionDouble;
+
 
 /**
  * 
@@ -32,6 +35,7 @@ public class Sample2_1 {
 
 		Program program = Program.builder()
 								.loadFishnetGridFile(bounds, cellSize, 1)
+								.spatialSemiJoin("the_geom", SGG, INTERSECTS)
 								.storeLayer(RESULT, "the_geom", "EPSG:5179")
 								.build();
 		marmot.deleteLayer(RESULT);

@@ -5,8 +5,8 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.Program;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import marmot.support.DefaultRecord;
 
 /**

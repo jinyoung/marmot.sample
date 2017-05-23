@@ -9,8 +9,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
 import marmot.optor.geo.SpatialRelation;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import marmot.remote.robj.RemoteCatalog;
 
 /**

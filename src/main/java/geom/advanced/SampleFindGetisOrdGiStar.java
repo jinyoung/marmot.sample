@@ -1,18 +1,11 @@
 package geom.advanced;
 
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.log4j.PropertyConfigurator;
 
-import com.google.common.collect.Maps;
-
 import marmot.Program;
-import marmot.Record;
-import marmot.optor.geo.AggregateFunction;
 import marmot.optor.geo.LISAWeight;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import marmot.remote.robj.RemoteCatalog;
 
 /**

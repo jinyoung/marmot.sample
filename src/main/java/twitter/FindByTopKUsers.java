@@ -9,8 +9,8 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
 import marmot.optor.geo.AggregateFunction;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import marmot.remote.robj.RemoteCatalog;
 import utils.StopWatch;
 

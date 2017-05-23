@@ -5,7 +5,9 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
 
-import marmot.remote.MarmotClient;
+import marmot.remote.robj.MarmotClient;
+import twitter.SampleTwitterUtils.EmdInfo;
+import twitter.SampleTwitterUtils.SggInfo;
 
 /**
  * 

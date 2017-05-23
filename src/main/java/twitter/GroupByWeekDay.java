@@ -3,8 +3,8 @@ package twitter;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
 
 /**

@@ -7,8 +7,8 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.Column;
 import marmot.RecordSchema;
 import marmot.geo.catalog.LayerInfo;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import marmot.remote.robj.RemoteCatalog;
 
 /**

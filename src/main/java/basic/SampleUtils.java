@@ -2,9 +2,9 @@ package basic;
 
 import java.util.Map;
 
+import marmot.MarmotRuntime;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.remote.MarmotClient;
 import marmot.support.DefaultRecord;
 
 /**
@@ -12,7 +12,7 @@ import marmot.support.DefaultRecord;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleUtils {
-	public static void printLayerPrefix(MarmotClient marmot, String layerName, int count) {
+	public static void printLayerPrefix(MarmotRuntime marmot, String layerName, int count) {
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		RecordSet rset = marmot.readLayer(layerName);
 		Record record = DefaultRecord.of(rset.getRecordSchema());
@@ -25,7 +25,7 @@ public class SampleUtils {
 		}
 	}
 	
-	public static void printFilePrefix(MarmotClient marmot, String path, int count) {
+	public static void printFilePrefix(MarmotRuntime marmot, String path, int count) {
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		RecordSet rset = marmot.readMarmotFile(path);
 		Record record = DefaultRecord.of(rset.getRecordSchema());

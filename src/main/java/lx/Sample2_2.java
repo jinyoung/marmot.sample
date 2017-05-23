@@ -9,8 +9,9 @@ import com.vividsolutions.jts.geom.Envelope;
 import basic.SampleUtils;
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
+
 
 /**
  * 
@@ -18,7 +19,7 @@ import marmot.remote.RemoteMarmotConnector;
  */
 public class Sample2_2 {
 	private static final String SGG = "lx/sgg_seoul/heap";
-	private static final String RESULT = "tmp/result";
+	private static final String RESULT = "tmp/hex_500m_seoul";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -30,6 +31,7 @@ public class Sample2_2 {
 		LayerInfo info = marmot.getCatalog().getLayerInfo(SGG);
 		String srid = info.getSRID();
 		Envelope bounds = info.getBounds();
+		bounds.expandBy(500*1.5, 500);
 
 		Program program = Program.builder()
 								.loadHexagonGridFile(srid, bounds, 500, 1)

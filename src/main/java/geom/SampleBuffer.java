@@ -4,8 +4,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import basic.SampleUtils;
 import marmot.Program;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 
 /**
  * 
@@ -21,10 +21,10 @@ public class SampleBuffer {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
-
+		
 		Program program = Program.builder()
 								.loadLayer(INPUT)
-								.transform("the_geom = ST_Buffer(the_geom, 50)")
+								.update("the_geom = ST_Buffer(the_geom, 50)")
 //								.buffer("the_geom", 50)
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();

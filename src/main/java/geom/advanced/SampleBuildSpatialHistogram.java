@@ -7,8 +7,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
 import marmot.optor.geo.HistogramCounter;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import marmot.remote.robj.RemoteCatalog;
 import utils.DimensionDouble;
 

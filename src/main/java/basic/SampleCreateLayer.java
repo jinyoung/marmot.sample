@@ -12,8 +12,8 @@ import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.RecordSets;
 import marmot.geo.GeoFunctions;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import marmot.support.DefaultRecord;
 import marmot.type.DataType;
 

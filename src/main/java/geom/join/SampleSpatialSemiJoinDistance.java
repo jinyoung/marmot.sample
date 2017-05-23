@@ -5,8 +5,8 @@ import org.apache.log4j.PropertyConfigurator;
 import basic.SampleUtils;
 import marmot.Program;
 import marmot.optor.geo.SpatialRelation;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 
 /**
  * 

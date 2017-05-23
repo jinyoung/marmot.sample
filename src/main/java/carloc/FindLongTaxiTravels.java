@@ -2,12 +2,12 @@ package carloc;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.Program;
+import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
+import marmot.remote.robj.RemoteCatalog;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import marmot.Program;
-import marmot.remote.MarmotClient;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.RemoteCatalog;
 
 /**
  * 

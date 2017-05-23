@@ -1,14 +1,12 @@
 package demo;
 
-import java.util.Optional;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.remote.MarmotClient;
 import marmot.remote.RemoteMarmotConnector;
+import marmot.remote.robj.MarmotClient;
 import marmot.support.DefaultRecord;
 import utils.StopWatch;
 
@@ -53,7 +51,7 @@ public class WeakFireDeathArea {
 		Program program2 = Program.builder()
 								.loadLayer(LAYER_FIRE)
 								.clipJoin("the_geom", LAYER_SEOUL)
-								.centroid("the_geom")
+								.centroid("the_geom", "the_geom")
 								.clipJoin("the_geom", "tmp/fire_death/far_seoul")
 								.storeLayer("tmp/fire_death/weak_area", "the_geom", SRID)
 								.build();
