@@ -3,10 +3,12 @@ package bizarea;
 import org.apache.log4j.PropertyConfigurator;
 
 import basic.SampleUtils;
+import marmot.MarmotDataSet;
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
+import marmot.remote.robj.RemoteMarmotDataSet;
 
 /**
  * 
@@ -27,16 +29,15 @@ public class Prep0 {
 		LayerInfo info = marmot.getCatalog().getLayerInfo(SGG);
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
+		
+		MarmotDataSet sid = RemoteMarmotDataSet.layer(SID);
 
 		Program program;
 		program = Program.builder()
 						.loadLayer(SGG)
 						.expand("sid_cd:string", "sid_cd = sig_cd.substring(0,2)")
-						.join(setter -> setter
-							.withLayer(SID)
-							.onColumns("sid_cd", "ctprvn_cd")
-							.output("*,param.ctp_kor_nm as sid_nm")
-							.workerCount(1)
+						.join("sid_cd", sid, "ctprvn_cd", "*,param.ctp_kor_nm as sid_nm", opts->
+							opts.workerCount(1)
 						)
 						.project("the_geom, sig_cd as sgg_cd, sig_kor_nm as sgg_nm, sid_cd, sid_nm")
 						.storeLayer(SID_SGG, geomCol, srid)

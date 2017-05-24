@@ -8,10 +8,12 @@ import java.util.stream.IntStream;
 import org.apache.log4j.PropertyConfigurator;
 
 import basic.SampleUtils;
+import marmot.MarmotDataSet;
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
+import marmot.remote.robj.RemoteMarmotDataSet;
 
 /**
  * 
@@ -19,7 +21,6 @@ import marmot.remote.robj.MarmotClient;
  */
 public class Step1FlowPop {
 	private static final String BIZ_GRID = "tmp/biz/grid100";
-	private static final String BLOCK_CENTERS = "geo_vision/block_centers/heap";
 	private static final String FLOW_POP = "data/geo_vision/flow_pop/2015/time";
 	private static final String RESULT = "tmp/biz/flow_pop_grid100";
 	
@@ -39,6 +40,8 @@ public class Step1FlowPop {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
+		MarmotDataSet bizGrid = RemoteMarmotDataSet.layer(BIZ_GRID);
+		
 		Program program = Program.builder()
 								.loadCsvFiles(FLOW_POP)
 								// 시간대 단위의 유동인구는 모두 합쳐 하루 매출액을 계산한다. 
@@ -46,12 +49,8 @@ public class Step1FlowPop {
 								.project("std_ym,block_cd,flow_pop")
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 								// 유동인구 구역을 뽑는다. 
-								.join(setter -> setter
-									.withLayer(BIZ_GRID)
-									.onColumns("block_cd", "block_cd")
-									.output("param.*,std_ym,flow_pop")
-									.workerCount(32)
-								)
+								.join("block_cd", bizGrid, "block_cd",
+										"param.*,std_ym,flow_pop", opt->opt.workerCount(32))
 								// 한 그리드 셀에 여러 소지역 유동인구 정보가 존재하면,
 								// 해당 유동인구들의 평균을 구한다.
 								.groupBy("std_ym,cell_id")
