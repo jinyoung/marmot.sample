@@ -34,7 +34,7 @@ public class Sample2_1 {
 		DimensionDouble cellSize = new DimensionDouble(500, 500);
 
 		Program program = Program.builder()
-								.loadFishnetGridFile(bounds, cellSize, 1)
+								.loadSquareGridFile(bounds, cellSize, 1)
 								.spatialSemiJoin("the_geom", SGG, INTERSECTS)
 								.storeLayer(RESULT, "the_geom", "EPSG:5179")
 								.build();

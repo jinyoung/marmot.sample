@@ -37,7 +37,7 @@ public class SampleAssignFinshnetGridCell {
 		Program program = Program.builder()
 								.loadLayer(INPUT)
 								.filter("status==1 || status==2")
-								.assignFishnetGridCell("the_geom", envl, cellSize)
+								.assignSquareGridCell("the_geom", envl, cellSize)
 								.transform("count:int", "count = 1")
 								.groupBy("cell_ordinal")
 									.taggedKeyColumns("cell_geom,cell_pos")
