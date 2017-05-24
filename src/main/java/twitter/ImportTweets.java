@@ -51,7 +51,8 @@ public class ImportTweets {
 								// 'LOG_DIR' 디렉토리에 저장된 Tweet 로그 파일들을 읽는다.
 								.loadTextFile(LOG_DIR)
 								// Json 포맷 파싱
-								.transform(SCHEMA, INIT_SCRIPT, PARSE)
+								.transform(SCHEMA, PARSE,
+											opts->opts.initializeScript(INIT_SCRIPT))
 								// 'coordinates'의 위경도 좌표계를 EPSG:5186으로 변경한 값을
 								// 'the_geom' 컬럼에 저장시킨다.
 								.transformCRS("coordinates", "the_geom", "EPSG:4326", targetSrid)
