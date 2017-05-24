@@ -1,6 +1,8 @@
 package bizarea;
 
+import static marmot.optor.geo.AggregateFunction.COUNT;
 import static marmot.optor.geo.AggregateFunction.SUM;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -8,22 +10,19 @@ import java.util.stream.IntStream;
 import org.apache.log4j.PropertyConfigurator;
 
 import basic.SampleUtils;
-import marmot.MarmotDataSet;
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
-import marmot.optor.JoinOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
-import marmot.remote.robj.RemoteMarmotDataSet;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class Step1CardSales {
+public class Step1Land {
 	private static final String BIZ_GRID = "tmp/biz/grid100";
-	private static final String CARD_SALES = "data/geo_vision/card_sales/2015/time";
-	private static final String RESULT = "tmp/biz/grid100_sales";
+	private static final String LAND_AREA = "admin/land/registry/area/heap";
+	private static final String RESULT = "tmp/biz/grid100_land";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -32,38 +31,33 @@ public class Step1CardSales {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		String sumExpr = IntStream.range(0, 24)
-								.mapToObj(idx -> String.format("sale_amt_%02dtmst", idx))
+		String avgExpr = IntStream.range(0, 24)
+								.mapToObj(idx -> String.format("avg_%02dtmst", idx))
 								.collect(Collectors.joining("+"));
-		sumExpr = "daily_sales="+sumExpr;
+		avgExpr = String.format("flow_pop=(%s)/24", avgExpr);
 		
 		LayerInfo info = marmot.getCatalog().getLayerInfo(BIZ_GRID);
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		MarmotDataSet bizGrid = RemoteMarmotDataSet.layer(BIZ_GRID);
-		
 		Program program = Program.builder()
-								// 전국 카드매출액 파일을 읽는다.
-								.loadCsvFiles(CARD_SALES)
-								// 시간대 단위의 매출액은 모두 합쳐 하루 매출액을 계산한다. 
-								.update("daily_sales:double", sumExpr)
-								.project("std_ym,block_cd,daily_sales")
+								.loadLayer(LAND_AREA)
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
-								// 매출액 구역을 뽑는다.
-								.join("block_cd", bizGrid, "block_cd",
-									"param.*,std_ym,daily_sales", opt->opt.workerCount(64))
-								// 한 그리드 셀에 여러 소지역 매출액 정보가 존재하면,
-								// 해당 매출액은 모두 더한다. 
-								.groupBy("std_ym,cell_id")
+								// 유동인구 구역을 뽑는다. 
+								.spatialJoin("the_geom", BIZ_GRID, INTERSECTS,
+											"main_purps as bld_using,area,param.*")
+								// 그리드 셀, 건축물 용도별로 건물 수와 총 면점을 집계한다. 
+								.update("area:float", "area = area")
+								.groupBy("cell_id,block_cd,bld_using")
 									.taggedKeyColumns(geomCol + ",sgg_cd")
-									.aggregate(SUM("daily_sales").as("daily_sales"))
+									.aggregate(SUM("area").as("bld_area"),
+												COUNT().as("bld_cnt"))
 								.project(String.format("%s,*-{%s}", geomCol, geomCol))
 								.storeLayer(RESULT, geomCol, srid)
 								.build();
 		marmot.deleteLayer(RESULT);
 		marmot.execute("card_sales", program);
 		
-		SampleUtils.printLayerPrefix(marmot, BIZ_GRID, 10);
+		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
 	}
 }

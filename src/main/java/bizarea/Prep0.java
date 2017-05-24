@@ -35,7 +35,7 @@ public class Prep0 {
 		Program program;
 		program = Program.builder()
 						.loadLayer(SGG)
-						.expand("sid_cd:string", "sid_cd = sig_cd.substring(0,2)")
+						.update("sid_cd:string", "sid_cd = sig_cd.substring(0,2)")
 						.join("sid_cd", sid, "ctprvn_cd", "*,param.ctp_kor_nm as sid_nm", opts->
 							opts.workerCount(1)
 						)

@@ -17,10 +17,10 @@ import marmot.remote.robj.RemoteMarmotDataSet;
  * @author Kang-Woo Lee (ETRI)
  */
 public class Step2 {
-	private static final String BIZ_GRID_SALES = "tmp/biz/sales_grid100";
-	private static final String BIZ_GRID_FLOW_POP = "tmp/biz/flow_pop_grid100";
+	private static final String BIZ_GRID_SALES = "tmp/biz/grid100_sales";
+	private static final String BIZ_GRID_FLOW_POP = "tmp/biz/grid100_pop";
 	private static final String SID_SGG = "admin/political/sid_sgg/heap";
-	private static final String RESULT = "tmp/biz/grid_sales_flowpop";
+	private static final String RESULT = "tmp/biz/grid100_sales_pop";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -40,7 +40,8 @@ public class Step2 {
 
 		Program program = Program.builder()
 								.loadLayer(BIZ_GRID_SALES)
-								.join("std_ym,cell_id,sgg_cd", bizGridFlowPop, "std_ym,cell_id,sgg_cd",
+								.join("std_ym,cell_id,sgg_cd", bizGridFlowPop,
+										"std_ym,cell_id,sgg_cd",
 										"*, param.{"
 											+ "the_geom as param_the_geom,"
 											+ "std_ym as param_std_ym,"

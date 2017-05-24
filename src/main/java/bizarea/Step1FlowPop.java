@@ -22,7 +22,7 @@ import marmot.remote.robj.RemoteMarmotDataSet;
 public class Step1FlowPop {
 	private static final String BIZ_GRID = "tmp/biz/grid100";
 	private static final String FLOW_POP = "data/geo_vision/flow_pop/2015/time";
-	private static final String RESULT = "tmp/biz/flow_pop_grid100";
+	private static final String RESULT = "tmp/biz/grid100_pop";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -45,7 +45,7 @@ public class Step1FlowPop {
 		Program program = Program.builder()
 								.loadCsvFiles(FLOW_POP)
 								// 시간대 단위의 유동인구는 모두 합쳐 하루 매출액을 계산한다. 
-								.expand("flow_pop:double", avgExpr)
+								.update("flow_pop:double", avgExpr)
 								.project("std_ym,block_cd,flow_pop")
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 								// 유동인구 구역을 뽑는다. 
