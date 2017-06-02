@@ -9,7 +9,7 @@ import com.vividsolutions.jts.geom.Point;
 
 import basic.SampleUtils;
 import marmot.Program;
-import marmot.module.geo.ClusterWithKMeansParameters;
+import marmot.process.geo.ClusterWithKMeansParameters;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -39,7 +39,7 @@ public class SampleKMeans {
 		params.terminationIterations(30);
 		
 		marmot.deleteLayer(OUTPUT);
-		marmot.executeProcess("kmeans", params.toParameterMap());
+		marmot.executeProcess("kmeans", params);
 		
 		SampleUtils.printLayerPrefix(marmot, OUTPUT, 10);
 	}
