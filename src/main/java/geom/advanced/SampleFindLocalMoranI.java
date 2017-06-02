@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 
 import marmot.Program;
 import marmot.Record;
-import marmot.optor.geo.AggregateFunction;
+import marmot.optor.AggregateFunction;
 import marmot.optor.geo.LISAWeight;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;

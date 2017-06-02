@@ -1,6 +1,6 @@
 package lx;
 
-import static marmot.optor.geo.AggregateFunction.SUM;
+import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -29,7 +29,7 @@ public class Sample {
 		Program program = Program.builder()
 								.loadLayer(SGG)
 								.aggregateJoin("the_geom", VISITOR, INTERSECTS,
-										SUM("tot_15").as("sum_15"))
+												SUM("tot_15").as("sum_15"))
 								.filter("sum_15 >= 500000")
 								.storeLayer(RESULT, "the_geom", "EPSG:5179")
 								.build();

@@ -1,6 +1,6 @@
 package lx;
 
-import static marmot.optor.geo.AggregateFunction.SUM;
+import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;

@@ -6,8 +6,6 @@ import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.remote.robj.MarmotClient;
-import twitter.SampleTwitterUtils.EmdInfo;
-import twitter.SampleTwitterUtils.SggInfo;
 
 /**
  * 

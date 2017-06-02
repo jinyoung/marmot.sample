@@ -43,7 +43,7 @@ public class PrintCatalog {
 		}
 		
 		// 특정 이름의 레이어의 등록정보를 접근
-		LayerInfo info = catalog.getLayerInfo("transit/subway_stations/heap");
+		LayerInfo info = catalog.getLayerInfo("transit/subway/stations/heap");
 		
 		// 카다로그에 등록된 모든 폴더를 접근한다.
 		List<String> folders = catalog.getDirAll();

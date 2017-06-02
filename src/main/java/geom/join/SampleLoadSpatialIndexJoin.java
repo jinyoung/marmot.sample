@@ -14,7 +14,7 @@ import marmot.remote.robj.MarmotClient;
  */
 public class SampleLoadSpatialIndexJoin {
 	private static final String RESULT = "tmp/result";
-	private static final String OUTER = "transit/subway_stations/clusters";
+	private static final String OUTER = "transit/subway/stations/clusters";
 	private static final String INNER = "admin/political/sgg/clusters";
 
 	public static final void main(String... args) throws Exception {

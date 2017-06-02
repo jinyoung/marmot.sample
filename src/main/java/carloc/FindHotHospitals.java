@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Program;
-import marmot.optor.geo.AggregateFunction;
+import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;

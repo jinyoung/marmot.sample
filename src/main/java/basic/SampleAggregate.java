@@ -1,9 +1,9 @@
 package basic;
 
-import static marmot.optor.geo.AggregateFunction.AVG;
-import static marmot.optor.geo.AggregateFunction.MAX;
-import static marmot.optor.geo.AggregateFunction.MIN;
-import static marmot.optor.geo.AggregateFunction.STDDEV;
+import static marmot.optor.AggregateFunction.AVG;
+import static marmot.optor.AggregateFunction.MAX;
+import static marmot.optor.AggregateFunction.MIN;
+import static marmot.optor.AggregateFunction.STDDEV;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -34,6 +34,6 @@ public class SampleAggregate {
 		marmot.deleteFile(RESULT);
 		marmot.execute("transform", program);
 		
-		SampleUtils.printFilePrefix(marmot, RESULT, 10);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }

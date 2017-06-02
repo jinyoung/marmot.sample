@@ -15,7 +15,7 @@ import marmot.support.DefaultRecord;
  */
 public class SampleDissolve {
 	private static final String RESULT = "tmp/sample/result";
-	private static final String LAYER = "admin/cadastral_11/heap";
+	private static final String INPUT = "transit/subway/stations/heap";
 	private static final int NPARTS = 151;
 	
 	public static final void main(String... args) throws Exception {
@@ -26,10 +26,9 @@ public class SampleDissolve {
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
 		Program program = Program.builder()
-								.loadLayer(LAYER)
-								.transform("SD_SGG:string", "SD_SGG=INNB.substring(0,8)")
-								.project("the_geom,SD_SGG")
-								.dissolve("SD_SGG", NPARTS)
+								.loadLayer(INPUT)
+								.project("the_geom,sig_cd")
+								.dissolve("sig_cd", NPARTS)
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 

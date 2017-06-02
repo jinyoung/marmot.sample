@@ -6,7 +6,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
-import marmot.optor.geo.AggregateFunction;
+import marmot.optor.AggregateFunction;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import marmot.remote.robj.RemoteCatalog;
@@ -16,9 +16,9 @@ import utils.DimensionDouble;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleAssignFinshnetGridCell {
+public class SampleAssignSquareGridCell {
 	private static final String INPUT = "taxi/trip/heap";
-	private static final String BORDER = "admin/seoul_emd/heap";
+	private static final String BORDER = "demo/demo_seoul";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {

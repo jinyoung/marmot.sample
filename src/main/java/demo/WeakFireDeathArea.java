@@ -32,7 +32,7 @@ public class WeakFireDeathArea {
 		// 서울시 종합병원 위치에서 3km 버퍼 연산을 취해 clustered layer를 생성한다.
 		Program program0 = Program.builder()
 								.loadLayer(LAYER_HOSPITAL)
-								.buffer("the_geom", 3000)
+								.buffer("the_geom", "the_geom", 3000)
 								.storeLayer("tmp/fire_death/hospitals3000", "the_geom", SRID)
 								.build();
 		marmot.deleteLayer("tmp/fire_death/hospitals3000");

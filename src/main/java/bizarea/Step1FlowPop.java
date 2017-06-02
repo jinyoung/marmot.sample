@@ -1,6 +1,6 @@
 package bizarea;
 
-import static marmot.optor.geo.AggregateFunction.AVG;
+import static marmot.optor.AggregateFunction.AVG;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -60,7 +60,7 @@ public class Step1FlowPop {
 								.storeLayer(RESULT, geomCol, srid)
 								.build();
 		marmot.deleteLayer(RESULT);
-		marmot.execute("card_sales", program);
+		marmot.execute("flow_pop", program);
 		
 		SampleUtils.printLayerPrefix(marmot, BIZ_GRID, 10);
 	}

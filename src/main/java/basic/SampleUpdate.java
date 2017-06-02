@@ -10,8 +10,8 @@ import marmot.remote.robj.MarmotClient;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleTransform {
-	private static final String INPUT = "transit/subway_stations/heap";
+public class SampleUpdate {
+	private static final String INPUT = "transit/subway/stations/heap";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -23,12 +23,12 @@ public class SampleTransform {
 
 		Program program = Program.builder()
 								.loadLayer(INPUT)
-								.transform("the_geom:point,area:double,SIG_CD:int",
+								.update("the_geom:point,area:double,sig_cd:int",
 											"area = ST_Area(the_geom);"
 											+ "the_geom = ST_Centroid(the_geom);"
-											+ "SIG_CD=Integer.parseInt(SIG_CD);"
-											+ "KOR_SUB_NM='Station(' + KOR_SUB_NM + ')'")
-								.project("the_geom,area,SIG_CD,KOR_SUB_NM")
+											+ "sig_cd=Integer.parseInt(sig_cd);"
+											+ "kor_sub_nm='Station(' + kor_sub_nm + ')'")
+								.project("the_geom,area,sig_cd,kor_sub_nm")
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 		marmot.deleteLayer(RESULT);

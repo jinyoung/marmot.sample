@@ -1,6 +1,6 @@
 package bizarea;
 
-import static marmot.optor.geo.AggregateFunction.SUM;
+import static marmot.optor.AggregateFunction.SUM;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -11,7 +11,6 @@ import basic.SampleUtils;
 import marmot.MarmotDataSet;
 import marmot.Program;
 import marmot.geo.catalog.LayerInfo;
-import marmot.optor.JoinOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import marmot.remote.robj.RemoteMarmotDataSet;

@@ -12,7 +12,7 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleBuffer {
-	private static final String INPUT = "transit/subway_stations/heap";
+	private static final String INPUT = "transit/subway/stations/heap";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {

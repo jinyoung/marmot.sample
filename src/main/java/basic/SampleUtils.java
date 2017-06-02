@@ -25,7 +25,7 @@ public class SampleUtils {
 		}
 	}
 	
-	public static void printFilePrefix(MarmotRuntime marmot, String path, int count) {
+	public static void printMarmotFilePrefix(MarmotRuntime marmot, String path, int count) {
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		RecordSet rset = marmot.readMarmotFile(path);
 		Record record = DefaultRecord.of(rset.getRecordSchema());

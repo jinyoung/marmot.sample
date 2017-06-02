@@ -36,8 +36,8 @@ public class Prep0 {
 		program = Program.builder()
 						.loadLayer(SGG)
 						.update("sid_cd:string", "sid_cd = sig_cd.substring(0,2)")
-						.join("sid_cd", sid, "ctprvn_cd", "*,param.ctp_kor_nm as sid_nm", opts->
-							opts.workerCount(1)
+						.join("sid_cd", sid, "ctprvn_cd", "*,param.ctp_kor_nm as sid_nm",
+							opts->opts.workerCount(1)
 						)
 						.project("the_geom, sig_cd as sgg_cd, sig_kor_nm as sgg_nm, sid_cd, sid_nm")
 						.storeLayer(SID_SGG, geomCol, srid)

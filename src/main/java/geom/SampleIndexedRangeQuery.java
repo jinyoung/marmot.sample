@@ -19,7 +19,7 @@ import marmot.remote.robj.RemoteCatalog;
  */
 public class SampleIndexedRangeQuery {
 	private static final String RESULT = "tmp/result";
-	private static final String SUBWAYS = "transit/subway_stations/clusters";
+	private static final String SEOUL = "demo/demo_seoul";
 	private static final String CADASTRAL = "admin/cadastral/clusters";
 
 	public static final void main(String... args) throws Exception {
@@ -30,13 +30,13 @@ public class SampleIndexedRangeQuery {
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		RemoteCatalog catalog = marmot.getCatalog();
 		
-		LayerInfo innerInfo = catalog.getLayerInfo(SUBWAYS);
+		LayerInfo innerInfo = catalog.getLayerInfo(SEOUL);
 		Envelope bounds = GeoClientUtils.expandBy(innerInfo.getBounds(), -10000);
 		Geometry key = GeoClientUtils.toPolygon(bounds);
 		
 		Program program = Program.builder()
 								.loadLayer(CADASTRAL, SpatialRelation.INTERSECTS, key)
-								.project("the_geom,INNB")
+								.project("the_geom,pnu")
 								.storeLayer(RESULT, "the_geom", "EPSG:5186")
 								.build();
 

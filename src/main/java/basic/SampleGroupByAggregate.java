@@ -1,8 +1,8 @@
 package basic;
 
-import static marmot.optor.geo.AggregateFunction.COUNT;
-import static marmot.optor.geo.AggregateFunction.MAX;
-import static marmot.optor.geo.AggregateFunction.MIN;
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.AggregateFunction.MAX;
+import static marmot.optor.AggregateFunction.MIN;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -15,7 +15,7 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleGroupByAggregate {
-	private static final String INPUT = "transit/subway_stations/heap";
+	private static final String INPUT = "transit/subway/stations/heap";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -27,13 +27,13 @@ public class SampleGroupByAggregate {
 
 		Program program = Program.builder()
 								.loadLayer(INPUT)
-								.groupBy("SIG_CD")
-									.aggregate(COUNT(), MAX("SUB_STA_SN"), MIN("SUB_STA_SN"))
+								.groupBy("sig_cd")
+									.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"))
 								.store(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);
 		marmot.execute("transform", program);
 
-		SampleUtils.printFilePrefix(marmot, RESULT, 10);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }

@@ -11,7 +11,7 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleFilter {
-	private static final String INPUT = "transit/subway_stations/heap";
+	private static final String INPUT = "transit/subway/stations/heap";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -23,14 +23,14 @@ public class SampleFilter {
 
 		Program program = Program.builder()
 								.loadLayer(INPUT)
-								.filter("KOR_SUB_NM.length() == 6")
-								.project("KOR_SUB_NM")
-								.storeAsCsv(RESULT)
+								.filter("kor_sub_nm.length() == 6")
+								.project("kor_sub_nm as kor_nm")
+								.store(RESULT)
 								.build();
 
 		marmot.deleteLayer(RESULT);
-		marmot.execute("transform", program);
+		marmot.execute("filter", program);
 		
-//		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }

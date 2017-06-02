@@ -1,6 +1,6 @@
 package geom;
 
-import static marmot.optor.geo.AggregateFunction.ConvexHull;
+import static marmot.optor.AggregateFunction.ConvexHull;
 
 import org.apache.log4j.PropertyConfigurator;
 

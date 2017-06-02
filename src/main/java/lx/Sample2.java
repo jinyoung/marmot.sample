@@ -1,6 +1,6 @@
 package lx;
 
-import static marmot.optor.geo.AggregateFunction.SUM;
+import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
