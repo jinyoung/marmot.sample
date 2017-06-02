@@ -25,7 +25,7 @@ public class SampleKMeans {
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		// 원격 MarmotServer에 접속.
+		// �썝寃� MarmotServer�뿉 �젒�냽.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
