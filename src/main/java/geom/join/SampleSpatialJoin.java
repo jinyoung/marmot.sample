@@ -14,8 +14,8 @@ import marmot.remote.robj.MarmotClient;
  */
 public class SampleSpatialJoin {
 	private static final String RESULT = "tmp/result";
-	private static final String INPUT = "admin/buildings/heap";
-	private static final String PARAM = "admin/seoul_emd/clusters";
+	private static final String BUS_STOPS = "교통/버스/정류장";
+	private static final String EMD = "구역/읍면동";
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -24,17 +24,17 @@ public class SampleSpatialJoin {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Program program = Program.builder()
-								.loadLayer(INPUT)
-								.spatialJoin("the_geom", PARAM, SpatialRelation.INTERSECTS,
+		Program program = Program.builder("spatial_join")
+								.load(BUS_STOPS)
+								.spatialJoin("the_geom", EMD, SpatialRelation.INTERSECTS,
 											"*-{EMD_CD},param.*-{the_geom}")
-								.storeLayer(RESULT, "the_geom", "EPSG:5186")
+								.storeMarmotFile(RESULT)
 								.build();
 
-		marmot.deleteLayer(RESULT);
-		marmot.execute("spatial_join", program);
+		marmot.deleteFile(RESULT);
+		marmot.execute(program);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }

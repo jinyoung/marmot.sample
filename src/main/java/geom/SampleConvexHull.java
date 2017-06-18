@@ -4,19 +4,18 @@ import static marmot.optor.AggregateFunction.ConvexHull;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import basic.SampleUtils;
+import marmot.DataSet;
 import marmot.Program;
-import marmot.Record;
-import marmot.RecordSet;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
-import marmot.support.DefaultRecord;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleConvexHull {
-	private static final String INPUT = "admin/workers/heap";
+	private static final String INPUT = "교통/버스/서울정류장";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -27,20 +26,15 @@ public class SampleConvexHull {
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
 		Program program = Program.builder()
-								.loadLayer(INPUT)
+								.load(INPUT)
 								.aggregate(ConvexHull("the_geom"))
-								.storeLayer(RESULT, "the_geom", "EPSG:5186")
+								.store(RESULT)
 								.build();
 
-		marmot.deleteLayer(RESULT);
-		marmot.execute("convex_hull", program);
-		
-		// 결과에 포함된 모든 레코드를 읽어 화면에 출력시킨다.
-		RecordSet rset = marmot.readLayer(RESULT);
-		Record record = DefaultRecord.of(rset.getRecordSchema());
-		int count = 0;
-		while ( ++count <= 10 && rset.next(record) ) {
-			System.out.println(record);
-		}
+		marmot.deleteDataSet(RESULT);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", program);
+
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		SampleUtils.printPrefix(result, 10);
 	}
 }

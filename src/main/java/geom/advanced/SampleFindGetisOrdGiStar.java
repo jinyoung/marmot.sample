@@ -6,7 +6,6 @@ import marmot.Program;
 import marmot.optor.geo.LISAWeight;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
-import marmot.remote.robj.RemoteCatalog;
 
 /**
  * 
@@ -14,7 +13,7 @@ import marmot.remote.robj.RemoteCatalog;
  */
 public class SampleFindGetisOrdGiStar {
 	private static final String RESULT = "tmp/result";
-	private static final String INPUT = "admin/factories/heap";
+	private static final String INPUT = "시연/대전공장";
 	private static final String VALUE_COLUMN = "FCTR_MEAS";
 
 	public static final void main(String... args) throws Exception {
@@ -23,9 +22,8 @@ public class SampleFindGetisOrdGiStar {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
-		RemoteCatalog catalog = marmot.getCatalog();
 		
-		Program program = Program.builder()
+		Program program = Program.builder("local_spatial_auto_correlation")
 								.loadGetisOrdGi(INPUT, VALUE_COLUMN, 1000,
 												LISAWeight.FIXED_DISTANCE_BAND)
 								.project("UID,gi_zscore,gi_pvalue")
@@ -33,7 +31,7 @@ public class SampleFindGetisOrdGiStar {
 								.storeAsCsv(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);
-		marmot.execute("local_spatial_auto_correlation", program);
+		marmot.execute(program);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 //		RecordSet rset = marmot.readLayer(RESULT);

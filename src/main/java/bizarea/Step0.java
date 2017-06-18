@@ -10,8 +10,8 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Envelope;
 
 import basic.SampleUtils;
+import marmot.DataSet;
 import marmot.Program;
-import marmot.geo.catalog.LayerInfo;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.DimensionDouble;
@@ -21,11 +21,12 @@ import utils.DimensionDouble;
  * @author Kang-Woo Lee (ETRI)
  */
 public class Step0 {
-	private static final String LAND_USAGE = "admin/land_usage/heap";
-	private static final String TEMP_BIG_CITIES = "tmp/biz/big_cities";
-	private static final String TEMP_BIZ_AREA = "tmp/biz/area";
-	private static final String BLOCK_CENTERS = "geo_vision/block_centers/heap";
-	private static final String BIZ_GRID = "tmp/biz/grid100";
+	private static final String LAND_USAGE = "토지/용도지역지구";
+	private static final String POLITICAL = "구역/통합법정동";
+	private static final String TEMP_BIG_CITIES = "tmp/bizarea/big_cities";
+	private static final String TEMP_BIZ_AREA = "tmp/bizarea/area";
+	private static final String BLOCK_CENTERS = "tmp/bizarea/centers";
+	private static final String BIZ_GRID = "tmp/bizarea/grid100";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -34,19 +35,22 @@ public class Step0 {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
+		DataSet result;
+		
 		//  행정경계에서 대도시 영역을 추출한다.
-		filterBigCities(marmot, TEMP_BIG_CITIES);
+		result = filterBigCities(marmot, TEMP_BIG_CITIES);
 		
 		// 용도지구에서 상업지역 추출
-		filterBizArea(marmot, TEMP_BIZ_AREA);
+		result = filterBizArea(marmot, TEMP_BIZ_AREA);
 
-		LayerInfo info = marmot.getCatalog().getLayerInfo(LAND_USAGE);
+		DataSet info = marmot.getDataSet(LAND_USAGE);
+		String srid = info.getSRID();
 		Envelope bounds = info.getBounds();
 		DimensionDouble cellSize = new DimensionDouble(100, 100);
 		
-		Program program = Program.builder()
+		Program program = Program.builder("get_biz_grid")
 								// 용도지구에 대한 100m 크기의 그리드를 생성 
-								.loadSquareGridFile(bounds, cellSize, 16)
+								.loadSquareGridFile(bounds, cellSize)
 								// 상업지구에 겹치는 그리드 셀만 추출한다.
 								.spatialSemiJoin("the_geom", TEMP_BIZ_AREA, INTERSECTS)
 								// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,
@@ -56,19 +60,18 @@ public class Step0 {
 								// 소지역 코드 (block_cd)를 부여한다.
 								.spatialJoin("the_geom", BLOCK_CENTERS, INTERSECTS,
 											"*-{cell_pos},param.block_cd")
-								.storeLayer(BIZ_GRID, "the_geom", info.getSRID())
+								.store(BIZ_GRID)
 								.build();
-		marmot.deleteLayer(BIZ_GRID);
-		marmot.execute("get_biz_grid", program);
+		marmot.deleteDataSet(BIZ_GRID);
+		result = marmot.createDataSet(BIZ_GRID, "the_geom", srid, program);
 		
-		marmot.deleteLayer(TEMP_BIG_CITIES);
-		marmot.deleteLayer(TEMP_BIZ_AREA);
+		marmot.deleteDataSet(TEMP_BIG_CITIES);
+		marmot.deleteDataSet(TEMP_BIZ_AREA);
 		
-		SampleUtils.printLayerPrefix(marmot, BIZ_GRID, 10);
+		SampleUtils.printPrefix(result, 10);
 	}
 
-	private static final String SID_SGG = "admin/political/sid_sgg/heap";
-	private static final void filterBigCities(MarmotClient marmot, String resultLayer) {
+	private static final DataSet filterBigCities(MarmotClient marmot, String result) {
 		String listExpr1 = Arrays.asList("11","26","27", "28", "29", "30", "31")
 								.stream()
 								.map(str -> "'" + str + "'")
@@ -80,21 +83,24 @@ public class Step0 {
 								.collect(Collectors.joining(",", "[", "]"));
 		String initExpr = String.format("$sid_cd=%s; $sgg_cd=%s", listExpr1, listExpr2);
 
-		LayerInfo info = marmot.getCatalog().getLayerInfo(SID_SGG);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet political = marmot.getDataSet(POLITICAL);
+		String geomCol = political.getGeometryColumn();
+		String srid = political.getSRID();
 		
-		Program program = Program.builder()
-								.loadLayer(SID_SGG)
+		Program program = Program.builder("filter_big_cities")
+								.load(POLITICAL)
+								.update("sid_cd:string,sgg_cd:string",
+										"sid_cd = bjd_cd.substring(0,2);"
+										+ "sgg_cd = bjd_cd.substring(0,5);")
 								.filter(initExpr,
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
-								.storeLayer(TEMP_BIG_CITIES, geomCol, srid)
+								.store(result)
 								.build();
-		marmot.deleteLayer(TEMP_BIG_CITIES);
-		marmot.execute("filter_big_cities", program);
+		marmot.deleteDataSet(result);
+		return marmot.createDataSet(result, geomCol, srid, program);
 	}
 
-	private static final void filterBizArea(MarmotClient marmot, String resultLayer)
+	private static final DataSet filterBizArea(MarmotClient marmot, String result)
 		throws Exception {
 		String listExpr = Arrays.asList("일반상업지역","유통상업지역","근린상업지역",
 										"중심상업지역")
@@ -103,17 +109,17 @@ public class Step0 {
 								.collect(Collectors.joining(",", "[", "]"));
 		String initExpr = String.format("$types = %s", listExpr);
 		
-		LayerInfo info = marmot.getCatalog().getLayerInfo(LAND_USAGE);
+		DataSet info = marmot.getDataSet(LAND_USAGE);
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 
-		Program program = Program.builder()
-								.loadLayer(LAND_USAGE)
+		Program program = Program.builder("filter_biz_area")
+								.load(LAND_USAGE)
 								.filter(initExpr, "$types.contains(dgm_nm)")
 								.project("the_geom")
-								.storeLayer(TEMP_BIZ_AREA, geomCol, srid)
+								.store(TEMP_BIZ_AREA)
 								.build();
-		marmot.deleteLayer(TEMP_BIZ_AREA);
-		marmot.execute("filter_biz_area", program);
+		marmot.deleteDataSet(result);
+		return marmot.createDataSet(result, geomCol, srid, program);
 	}
 }

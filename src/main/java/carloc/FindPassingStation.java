@@ -1,15 +1,14 @@
 package carloc;
 
-import java.time.LocalDateTime;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import basic.SampleUtils;
+import marmot.DataSet;
 import marmot.Program;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
-import marmot.support.DateTimeFunctions;
 import utils.StopWatch;
 
 /**
@@ -17,10 +16,9 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class FindPassingStation {
-	private static final String INPUT = "taxi/taxi.trj";
-	private static final String OUTPUT = "result";
-	private static final LocalDateTime START = LocalDateTime.of(2016, 1, 27, 8, 0);
-	private static final LocalDateTime END = LocalDateTime.of(2016, 1, 27, 10, 0);
+	private static final String TAXI_TRJ = "로그/나비콜/택시경로";
+	private static final String OUTPUT = "tmp/result";
+	private static final String SRID = "EPSG:5186";
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -29,40 +27,33 @@ public class FindPassingStation {
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
 		StopWatch watch = StopWatch.start();
-
-		String init1 = String.format("$key=ST_ITFromDateTime(ST_DTFromString('%s'), "
-															+ "ST_DTFromString('%s'));",
-										DateTimeFunctions.ST_DTToString(START),
-										DateTimeFunctions.ST_DTToString(END));
-		String pred1 = "ST_ITOverlaps(drive_interval,$key)";
 		
 		Geometry key = getSubwayStations(marmot, "사당역");
-		String schema = "the_geom:line_string";
-		String tran = "the_geom = ST_TRLineString(trajectory)";
-		
-		Program program = Program.builder()
-								.loadMarmotFile(INPUT)
+		Program program = Program.builder("find_passing_station")
+								.load(TAXI_TRJ)
 								.filter("status == 3")
-								.filter(init1, pred1)
-								.transform("the_geom:line_string",
+								.update("the_geom:line_string",
 											"the_geom = ST_TRLineString(trajectory)")
 								.withinDistance("the_geom", key, 100)
 								.project("*-{trajectory}")
-								.storeLayer(OUTPUT, "the_geom", "EPSG:5186")
+								.store(OUTPUT)
 								.build();
 		
-		marmot.execute("find_passing_station", program);
+		marmot.deleteDataSet(OUTPUT);
+		DataSet result = marmot.createDataSet(OUTPUT, "the_geom", SRID, program);
+		
+		SampleUtils.printPrefix(result, 5);
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
 	}
 
-	private static final String SUBWAY_STATIONS_LYAER = "transit/subway_stations/heap";
+	private static final String SUBWAY_STATIONS = "교통/지하철/서울역사";
 	private static Geometry getSubwayStations(MarmotClient marmot, String stationName)
 		throws Exception {
-		String predicate = String.format("KOR_SUB_NM == '%s'", stationName);
+		String predicate = String.format("kor_sub_nm == '%s'", stationName);
 		Program program = Program.builder()
-								.loadLayer(SUBWAY_STATIONS_LYAER)
+								.load(SUBWAY_STATIONS)
 								.filter(predicate)
 								.project("the_geom")
 								.build();

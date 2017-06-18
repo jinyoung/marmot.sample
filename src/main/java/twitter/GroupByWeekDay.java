@@ -12,8 +12,8 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class GroupByWeekDay {
-	private static final String INPUT_LAYER = "/social/tweets/heap";
-	private static final String OUTPUT_PATH = "tmp/social/tweets/result_week";
+	private static final String TWEETS = "로그/social/twitter";
+	private static final String RESULT = "/tmp/result";
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -23,17 +23,17 @@ public class GroupByWeekDay {
 		
 		StopWatch watch = StopWatch.start();
 
-		marmot.deleteFile(OUTPUT_PATH);
+		marmot.deleteFile(RESULT);
 
-		Program program = Program.builder()
-								.loadLayer(INPUT_LAYER)
+		Program program = Program.builder("group_by_weekday_and_count")
+								.load(TWEETS)
 								.project("id,created_at")
 								.transform("week_day:int", "week_day = ST_DTWeekDay(created_at)")
 								.groupBy("week_day").count()
 								.skip(0)
-								.storeAsCsv(OUTPUT_PATH)
+								.storeAsCsv(RESULT)
 								.build();
-		marmot.execute("group_by_weekday_and_count", program);
+		marmot.execute(program);
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());

@@ -2,12 +2,11 @@ package geom;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import basic.SampleUtils;
+import marmot.DataSet;
 import marmot.Program;
-import marmot.Record;
-import marmot.RecordSet;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
-import marmot.support.DefaultRecord;
 
 /**
  * 
@@ -15,7 +14,7 @@ import marmot.support.DefaultRecord;
  */
 public class SampleDissolve {
 	private static final String RESULT = "tmp/sample/result";
-	private static final String INPUT = "transit/subway/stations/heap";
+	private static final String INPUT = "교통/지하철/서울역사";
 	private static final int NPARTS = 151;
 	
 	public static final void main(String... args) throws Exception {
@@ -26,21 +25,16 @@ public class SampleDissolve {
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
 		Program program = Program.builder()
-								.loadLayer(INPUT)
+								.load(INPUT)
 								.project("the_geom,sig_cd")
 								.dissolve("sig_cd", NPARTS)
-								.storeLayer(RESULT, "the_geom", "EPSG:5186")
+								.store(RESULT)
 								.build();
 
-		marmot.deleteLayer(RESULT);
-		marmot.execute("dissolve", program);
-		
+		marmot.deleteDataSet(RESULT);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", program);
+
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		RecordSet rset = marmot.readLayer(RESULT);
-		Record record = DefaultRecord.of(rset.getRecordSchema());
-		int count = 0;
-		while ( ++count <= 10 && rset.next(record) ) {
-			System.out.println(record);
-		}
+		SampleUtils.printPrefix(result, 10);
 	}
 }

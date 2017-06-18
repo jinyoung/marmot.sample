@@ -16,7 +16,7 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleAggregate {
-	private static final String INPUT = "admin/workers/heap";
+	private static final String INPUT = "POI/주유소_가격";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -26,13 +26,14 @@ public class SampleAggregate {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		Program program = Program.builder()
-								.loadLayer(INPUT)
-								.aggregate(MAX("POP"), MIN("POP"), AVG("POP"), STDDEV("POP"))
-								.store(RESULT)
+		Program program = Program.builder("sample_aggreate")
+								.load(INPUT)
+								.filter("휘발유 > 0")
+								.aggregate(MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"))
+								.storeMarmotFile(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);
-		marmot.execute("transform", program);
+		marmot.execute(program);
 		
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}

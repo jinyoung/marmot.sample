@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.collect.Lists;
 
+import marmot.DataSet;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
@@ -21,11 +22,11 @@ import marmot.type.DataType;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleCreateLayer {
+public class SampleCreateDataSet {
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		// 생성될 레이어의 스키마를 정의함.
+		// 생성될 데이터세트의 스키마를 정의함.
 		RecordSchema schema = RecordSchema.builder()
 											.addColumn("the_geom", DataType.POINT)
 											.addColumn("name", DataType.STRING)
@@ -33,10 +34,10 @@ public class SampleCreateLayer {
 											.addColumn("gpa", DataType.DOUBLE)
 											.build();
 		
-		// 생성할 레이어에 저장될 레코드를 담을 레코드 객체를 생성
+		// 생성할 데이터세트에 저장될 레코드를 담을 레코드 객체를 생성
 		Record record = DefaultRecord.of(schema);
 		
-		// 생성할 레이어에 저장될 레코드들의 리스트를 생성.
+		// 생성할 데이터세트에 저장될 레코드들의 리스트를 생성.
 		List<Record> recordList = Lists.newArrayList();
 		
 		// 첫번째 레코드 (컬럼 이름을 통한 설정 )
@@ -66,10 +67,14 @@ public class SampleCreateLayer {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		marmot.deleteLayer("tmp/test");
-		// 생성된 레코드 세트를 지정된 레이어에 저장시킨다.
-		marmot.writeLayer("tmp/test", "the_geom", "EPSG:5186", rset);
+		marmot.deleteDataSet("tmp/test");
 		
-		SampleUtils.printLayerPrefix(marmot, "tmp/test", 10);
+		// 생성된 레코드 세트를 저장할 데이터세트를 생성한다.
+		DataSet ds = marmot.createDataSet("tmp/test", record.getSchema(), "the_geom",
+										"EPSG:5186");
+		// 생성된 레코드 세트를 지정된 데이터세트에 저장시킨다.
+		ds.append(rset);
+		
+		SampleUtils.printPrefix(marmot.getDataSet("tmp/test"), 10);
 	}
 }

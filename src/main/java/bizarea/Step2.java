@@ -5,21 +5,19 @@ import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 import org.apache.log4j.PropertyConfigurator;
 
 import basic.SampleUtils;
-import marmot.MarmotDataSet;
+import marmot.DataSet;
 import marmot.Program;
-import marmot.geo.catalog.LayerInfo;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
-import marmot.remote.robj.RemoteMarmotDataSet;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
 public class Step2 {
-	private static final String BIZ_GRID_SALES = "tmp/biz/grid100_sales";
-	private static final String BIZ_GRID_FLOW_POP = "tmp/biz/grid100_pop";
-	private static final String SID_SGG = "admin/political/sid_sgg/heap";
+	private static final String BIZ_GRID_SALES = "tmp/bizarea/grid100_sales";
+	private static final String BIZ_GRID_FLOW_POP = "tmp/bizarea/grid100_pop";
+	private static final String POLITICAL = "구역/통합법정동";
 	private static final String RESULT = "tmp/biz/grid100_sales_pop";
 	
 	public static final void main(String... args) throws Exception {
@@ -29,18 +27,17 @@ public class Step2 {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		LayerInfo info = marmot.getCatalog().getLayerInfo(BIZ_GRID_SALES);
+		DataSet info = marmot.getDataSet(BIZ_GRID_SALES);
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		MarmotDataSet bizGridFlowPop = RemoteMarmotDataSet.layer(BIZ_GRID_FLOW_POP);
 		String script = "if ( std_ym == null ) {std_ym = param_std_ym;}"
 						+ "if ( cell_id == null ) {cell_id = param_cell_id;}"
 						+ "if ( sgg_cd == null ) {sgg_cd = param_sgg_cd;}";
 
-		Program program = Program.builder()
-								.loadLayer(BIZ_GRID_SALES)
-								.join("std_ym,cell_id,sgg_cd", bizGridFlowPop,
+		Program program = Program.builder("merge")
+								.load(BIZ_GRID_SALES)
+								.join("std_ym,cell_id,sgg_cd", BIZ_GRID_FLOW_POP,
 										"std_ym,cell_id,sgg_cd",
 										"*, param.{"
 											+ "the_geom as param_the_geom,"
@@ -51,13 +48,13 @@ public class Step2 {
 								.update(script)
 								.project("*-{param_the_geom,param_std_ym,param_cell_id,param_sgg_cd}")
 								// 최종 결과에 행정도 코드를 부여한다.
-								.spatialJoin("the_geom", SID_SGG, INTERSECTS,
+								.spatialJoin("the_geom", POLITICAL, INTERSECTS,
 											"*-{cell_pos},param.*-{the_geom,sgg_cd}")
-								.storeLayer(RESULT, geomCol, srid)
+								.store(RESULT)
 								.build();
-		marmot.deleteLayer(RESULT);
-		marmot.execute("merge", program);
+		marmot.deleteDataSet(RESULT);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, program);
 		
-		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
+		SampleUtils.printPrefix(result, 10);
 	}
 }

@@ -15,7 +15,7 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleGroupByAggregate {
-	private static final String INPUT = "transit/subway/stations/heap";
+	private static final String INPUT = "교통/지하철/서울역사";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -25,14 +25,14 @@ public class SampleGroupByAggregate {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		Program program = Program.builder()
-								.loadLayer(INPUT)
+		Program program = Program.builder("group_by")
+								.load(INPUT)
 								.groupBy("sig_cd")
 									.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"))
-								.store(RESULT)
+								.storeMarmotFile(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);
-		marmot.execute("transform", program);
+		marmot.execute(program);
 
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}

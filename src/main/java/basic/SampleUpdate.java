@@ -11,7 +11,7 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleUpdate {
-	private static final String INPUT = "transit/subway/stations/heap";
+	private static final String INPUT = "교통/지하철/서울역사";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -21,19 +21,19 @@ public class SampleUpdate {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		Program program = Program.builder()
-								.loadLayer(INPUT)
+		Program program = Program.builder("update")
+								.load(INPUT)
 								.update("the_geom:point,area:double,sig_cd:int",
 											"area = ST_Area(the_geom);"
 											+ "the_geom = ST_Centroid(the_geom);"
 											+ "sig_cd=Integer.parseInt(sig_cd);"
 											+ "kor_sub_nm='Station(' + kor_sub_nm + ')'")
 								.project("the_geom,area,sig_cd,kor_sub_nm")
-								.storeLayer(RESULT, "the_geom", "EPSG:5186")
+								.storeMarmotFile(RESULT)
 								.build();
-		marmot.deleteLayer(RESULT);
-		marmot.execute("transform", program);
+		marmot.deleteFile(RESULT);
+		marmot.execute(program);
 		
-		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }

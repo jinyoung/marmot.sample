@@ -3,8 +3,8 @@ package bizarea;
 import org.apache.log4j.PropertyConfigurator;
 
 import basic.SampleUtils;
+import marmot.DataSet;
 import marmot.Program;
-import marmot.geo.catalog.LayerInfo;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -13,8 +13,8 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class Prep1 {
-	private static final String BLOCKS = "geo_vision/blocks/heap";
-	private static final String BLOCK_CENTERS = "geo_vision/block_centers/heap";
+	private static final String BLOCKS = "구역/지오비전_집계구";
+	private static final String BLOCK_CENTERS = "tmp/bizarea/centers";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -23,18 +23,18 @@ public class Prep1 {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		LayerInfo info = marmot.getCatalog().getLayerInfo(BLOCKS);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet blocks = marmot.getDataSet(BLOCKS);
+		String geomCol = blocks.getGeometryColumn();
+		String srid = blocks.getSRID();
 
-		Program program = Program.builder()
-								.loadLayer(BLOCKS)
+		Program program = Program.builder("to_centroid")
+								.load(BLOCKS)
 								.centroid(geomCol, geomCol)
-								.storeLayer(BLOCK_CENTERS, geomCol, srid)
+								.store(BLOCK_CENTERS)
 								.build();
-		marmot.deleteLayer(BLOCK_CENTERS);
-		marmot.execute("test", program);
+		marmot.deleteDataSet(BLOCK_CENTERS);
+		DataSet result = marmot.createDataSet(BLOCK_CENTERS, geomCol, srid, program);
 		
-		SampleUtils.printLayerPrefix(marmot, BLOCK_CENTERS, 10);
+		SampleUtils.printPrefix(result, 10);
 	}
 }

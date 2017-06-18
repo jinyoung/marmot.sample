@@ -11,7 +11,7 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleFilter {
-	private static final String INPUT = "transit/subway/stations/heap";
+	private static final String INPUT = "POI/주유소_가격";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -21,15 +21,15 @@ public class SampleFilter {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		Program program = Program.builder()
-								.loadLayer(INPUT)
-								.filter("kor_sub_nm.length() == 6")
-								.project("kor_sub_nm as kor_nm")
-								.store(RESULT)
+		Program program = Program.builder("filter")
+								.load(INPUT)
+								.filter("휘발유 > 2000")
+								.project("상호,휘발유")
+								.storeMarmotFile(RESULT)
 								.build();
 
-		marmot.deleteLayer(RESULT);
-		marmot.execute("filter", program);
+		marmot.deleteFile(RESULT);
+		marmot.execute(program);
 		
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}

@@ -8,6 +8,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Point;
 
 import basic.SampleUtils;
+import marmot.DataSet;
 import marmot.Program;
 import marmot.process.geo.ClusterWithKMeansParameters;
 import marmot.remote.RemoteMarmotConnector;
@@ -18,8 +19,8 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleKMeans {
-	private static final String SGG = "admin/political/sgg/heap";
-	private static final String INPUT = "admin/land_usage/heap";
+	private static final String SGG = "구역/시군구";
+	private static final String INPUT = "토지/용도지역지구";
 	private static final String OUTPUT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -38,16 +39,17 @@ public class SampleKMeans {
 		params.terminationDistance(100);
 		params.terminationIterations(30);
 		
-		marmot.deleteLayer(OUTPUT);
+		marmot.deleteDataSet(OUTPUT);
 		marmot.executeProcess("kmeans", params);
 		
-		SampleUtils.printLayerPrefix(marmot, OUTPUT, 10);
+		DataSet output = marmot.getDataSet(OUTPUT);
+		SampleUtils.printPrefix(output, 10);
 	}
 	
 	private static List<Point> getInitCentroids(MarmotClient marmot, int ncentroids,
 												double ratio) {
 		Program program = Program.builder()
-								.loadLayer(SGG)
+								.load(SGG)
 								.sample(ratio)
 								.limit(ncentroids)
 								.project("the_geom")

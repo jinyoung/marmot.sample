@@ -3,6 +3,7 @@ package geom;
 import org.apache.log4j.PropertyConfigurator;
 
 import basic.SampleUtils;
+import marmot.DataSet;
 import marmot.Program;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -12,7 +13,7 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleBuffer {
-	private static final String INPUT = "transit/subway/stations/heap";
+	private static final String INPUT = "교통/지하철/서울역사";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -23,16 +24,16 @@ public class SampleBuffer {
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
 		Program program = Program.builder()
-								.loadLayer(INPUT)
-								.update("the_geom = ST_Buffer(the_geom, 50)")
-//								.buffer("the_geom", 50)
-								.storeLayer(RESULT, "the_geom", "EPSG:5186")
+								.load(INPUT)
+//								.update("the_geom = ST_Buffer(the_geom, 50)")
+								.buffer("the_geom", "the_geom", 50)
+								.store(RESULT)
 								.build();
 
-		marmot.deleteLayer(RESULT);
-		marmot.execute("buffer", program);
+		marmot.deleteDataSet(RESULT);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", program);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
+		SampleUtils.printPrefix(result, 10);
 	}
 }

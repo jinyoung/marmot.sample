@@ -14,8 +14,8 @@ import marmot.remote.robj.MarmotClient;
  */
 public class SampleSpatialSemiJoinDistance {
 	private static final String RESULT = "tmp/result";
-	private static final String INPUT = "admin/cadastral/clusters";
-	private static final String PARAMS = "transit/subway_stations/clusters";
+	private static final String INPUT = "POI/주유소_가격";
+	private static final String PARAMS = "교통/지하철/역사";
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -24,17 +24,17 @@ public class SampleSpatialSemiJoinDistance {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Program program = Program.builder()
-								.loadLayer(INPUT)
+		Program program = Program.builder("within_distance")
+								.load(INPUT)
 								.spatialSemiJoin("the_geom", PARAMS,
 												SpatialRelation.WITHIN_DISTANCE(30))
-								.storeLayer(RESULT, "the_geom", "EPSG:5186")
+								.storeMarmotFile(RESULT)
 								.build();
 
-		marmot.deleteLayer(RESULT);
-		marmot.execute("within_distance", program);
+		marmot.deleteFile(RESULT);
+		marmot.execute(program);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printLayerPrefix(marmot, RESULT, 10);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }
