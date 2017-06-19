@@ -14,7 +14,7 @@ import marmot.remote.robj.MarmotClient;
  */
 public class SampleSpatialJoin {
 	private static final String RESULT = "tmp/result";
-	private static final String BUS_STOPS = "교통/버스/정류장";
+	private static final String BUS_STOPS = "POI/주유소_가격";
 	private static final String EMD = "구역/읍면동";
 
 	public static final void main(String... args) throws Exception {

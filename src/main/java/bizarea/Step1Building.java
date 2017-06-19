@@ -45,11 +45,11 @@ public class Step1Building {
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여,
 								// 대도시 상업지역과 겹치는 유동인구 구역을 뽑는다. 
 								.spatialJoin("the_geom", BIZ_GRID, INTERSECTS,
-											"a8 as bld_using,a15 as land_area,param.*")
+											"건축물용도코드,대지면적,param.*")
 								// 그리드 셀, 건축물 용도별로 건물 수와 총 면점을 집계한다. 
-								.groupBy("cell_id,block_cd,bld_using")
+								.groupBy("cell_id,block_cd,건축물용도코드")
 									.taggedKeyColumns(geomCol + ",sgg_cd")
-									.aggregate(SUM("land_area").as("land_area"),
+									.aggregate(SUM("대지면적").as("대지면적"),
 												COUNT().as("bld_cnt"))
 								.project(String.format("%s,*-{%s}", geomCol, geomCol))
 								.store(RESULT)

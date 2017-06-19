@@ -35,7 +35,7 @@ public class SampleIndexedRangeQuery {
 		
 		Program program = Program.builder()
 								.load(BUILDINGS, SpatialRelation.INTERSECTS, key)
-								.project("the_geom,sig_cd,bld_nm")
+								.project("the_geom,시군구코드,건물명")
 								.store(RESULT)
 								.build();
 

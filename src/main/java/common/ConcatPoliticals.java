@@ -82,6 +82,8 @@ public class ConcatPoliticals {
 		DataSet result = marmot.createDataSet(POLITICAL, geomCol, srid, program);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
+		result.cluster();
+		
 		SampleUtils.printPrefix(result, 10);
 	}
 }

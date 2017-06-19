@@ -9,8 +9,6 @@ import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
 /**
- * 본 클래스는 트위트 레이어를 읽어서, 2015.12.30 부터  2016.01.2이전까지의 트윗을
- * 읽어 그 중 'the_geom'과 'id'에 해당하는 값을 화면에 출력시킨다. 
  * 
  * @author Kang-Woo Lee (ETRI)
  */
@@ -43,7 +41,7 @@ public class ImportTweets {
 		marmot.deleteDataSet(OUTPUT_DATASET);
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
 		DataSet result = marmot.createDataSet(OUTPUT_DATASET, "the_geom", SRID, program);
-		result.cluster();
+//		result.cluster();
 		
 		SampleUtils.printPrefix(result, 10);
 	}

@@ -2,6 +2,7 @@ package basic;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.DataSet;
 import marmot.Program;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -20,17 +21,20 @@ public class SampleFilter {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
+		
+		DataSet input = marmot.getDataSet(INPUT);
+		String geomCol = input.getGeometryColumn();
 
 		Program program = Program.builder("filter")
 								.load(INPUT)
 								.filter("휘발유 > 2000")
 								.project("상호,휘발유")
-								.storeMarmotFile(RESULT)
+								.store(RESULT)
 								.build();
 
-		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.deleteDataSet(RESULT);
+		DataSet result = marmot.createDataSet(RESULT, program);
 		
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
+		SampleUtils.printPrefix(result, 10);
 	}
 }

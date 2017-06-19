@@ -32,7 +32,7 @@ public class SampleLoadSquareGridFile {
 		String geomCol = dataset.getGeometryColumn();
 		DimensionDouble dim = new DimensionDouble(SIDE_LEN, SIDE_LEN);
 
-		Program program = Program.builder()
+		Program program = Program.builder("sample_load_squaregrid")
 								.loadSquareGridFile(INPUT, dim)
 								.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
 								.store(RESULT)

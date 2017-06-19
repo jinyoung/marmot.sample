@@ -33,8 +33,8 @@ public class Step0 {
 		
 		String schema = "old:byte,be5:byte";
 		String init = "$now = ST_DateNow();";
-		String trans = "$date = (a13 != null && a13.length() >= 8) "
-								+ "? ST_DateParse(a13,'yyyyMMdd') : null;"
+		String trans = "$date = (사용승인일자 != null && 사용승인일자.length() >= 8) "
+								+ "? ST_DateParse(사용승인일자,'yyyyMMdd') : null;"
 						+ "$period = ($date != null) ? ST_DateDaysBetween($date,$now) : -1;"
 						+ "$age = $period/365L;"
 						+ "old = $age >= 20 ? 1 : 0;"
@@ -44,7 +44,7 @@ public class Step0 {
 								.load(BUILDINGS)
 								.update(schema, trans, opts->opts.initializeScript(init))
 								.spatialJoin("the_geom", EMD, INTERSECTS,
-											"the_geom,a1,old,be5,"
+											"the_geom,원천도형ID,old,be5,"
 											+ "param.{emd_cd,emd_kor_nm as emd_nm}")
 								.groupBy("emd_cd")
 									.taggedKeyColumns(geomCol + ",emd_nm")

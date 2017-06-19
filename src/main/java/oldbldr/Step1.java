@@ -19,7 +19,7 @@ import marmot.remote.robj.MarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class Step1 {
-	private static final String FLOW_POP = "로그/유동인구/2015/시간대별";
+	private static final String FLOW_POP = "국민/유동인구/시간대/2015";
 	private static final String BLOCK_CENTERS = "tmp/centers";
 	private static final String EMD = "구역/읍면동";
 	private static final String RESULT = "tmp/flowpop_emd";
