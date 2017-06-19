@@ -1,5 +1,7 @@
 package carloc;
 
+import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -10,7 +12,6 @@ import basic.SampleUtils;
 import marmot.Program;
 import marmot.RecordSet;
 import marmot.optor.AggregateFunction;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
@@ -41,8 +42,8 @@ public class FindBestRoadsForPickup {
 		program = Program.builder("match_and_rank_roads")
 						.load(TAXI_LOG)
 						.filter("status == 0")
-						.update("hour:int", "hour=일자.substring(8,10)")
-						.knnJoin("the_geom", ROADS, 1, SpatialRelation.WITHIN_DISTANCE(10),
+						.update("hour:int", "hour=ts.substring(8,10)")
+						.knnJoin("the_geom", ROADS, 1, WITHIN_DISTANCE(10),
 								"hour,car_no,param.{LINK_ID,the_geom,ROAD_NAME,ROADNAME_A}")
 						.groupBy("hour,LINK_ID")
 								.taggedKeyColumns("the_geom,ROAD_NAME,ROADNAME_A")
