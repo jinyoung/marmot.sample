@@ -62,7 +62,7 @@ public class FindByEmd {
 								.project("the_geom")
 								.build();
 		// 프로그램 수행으로 생성된 임시 레이어를 읽어 강남구 영역을 읽는다.
-		return marmot.executeAndGetResult(program)
+		return marmot.executeSequentially(program)
 						.stream()
 						.findAny().get()
 						.getGeometry(0);

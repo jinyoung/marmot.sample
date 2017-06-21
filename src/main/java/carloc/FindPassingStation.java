@@ -57,7 +57,7 @@ public class FindPassingStation {
 								.filter(predicate)
 								.project("the_geom")
 								.build();
-		return marmot.executeAndGetResult(program)
+		return marmot.executeSequentially(program)
 						.stream()
 						.map(rec -> rec.getGeometry(0))
 						.findAny()

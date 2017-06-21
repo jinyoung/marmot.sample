@@ -1,17 +1,9 @@
 package apttrx;
 
-import static marmot.optor.AggregateFunction.AVG;
-import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.AggregateFunction.MAX;
-import static marmot.optor.AggregateFunction.MIN;
-import static marmot.optor.AggregateFunction.SUM;
-
 import org.apache.log4j.PropertyConfigurator;
 
-import basic.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;

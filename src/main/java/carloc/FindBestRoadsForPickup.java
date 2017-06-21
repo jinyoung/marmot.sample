@@ -73,7 +73,7 @@ public class FindBestRoadsForPickup {
 								.load(resultLayerName)
 								.filter("hour == " + hour)
 								.build();
-		RecordSet rset = marmot.executeAndGetResult(program);
+		RecordSet rset = marmot.executeSequentially(program);
 
 		String file = String.format("/home/kwlee/tmp/%s_%02d.shp", baseName, hour);
 		marmot.writeToShapefile(rset, new File(file), "best_roads", SRID,

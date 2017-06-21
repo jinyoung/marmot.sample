@@ -11,11 +11,11 @@ import marmot.DataSet;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
-import marmot.RecordSets;
 import marmot.geo.GeoFunctions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import marmot.support.DefaultRecord;
+import marmot.support.RecordSets;
 import marmot.type.DataType;
 
 /**
