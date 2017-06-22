@@ -50,7 +50,8 @@ public class BuildJinBunPOI {
 							.project(geomCol + ",도로명코드,건물본번,건물부번,지하여부,법정동코드")
 							.join("도로명코드,건물본번,건물부번,지하여부",
 									ADDR, "도로명코드,건물본번,건물부번,지하여부",
-									geomCol + ",param.{건물관리번호}")
+									geomCol + ",param.{건물관리번호}",
+									opts -> opts.workerCount(23))
 							.join("건물관리번호", tempDs, "건물관리번호",
 									"*,param.{법정동코드,지번본번,지번부번,산여부}")
 							.distinct("건물관리번호,법정동코드,지번본번,지번부번,산여부")
