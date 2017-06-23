@@ -5,7 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.geo.GeoClientUtils;
@@ -19,7 +19,7 @@ import marmot.remote.robj.MarmotClient;
  */
 public class SampleIndexedRangeQuery {
 	private static final String RESULT = "tmp/result";
-	private static final String SEOUL = "교통/지하철/서울역사";
+	private static final String SEOUL = "시연/서울특별시";
 	private static final String BUILDINGS = "주소/건물POI";
 
 	public static final void main(String... args) throws Exception {

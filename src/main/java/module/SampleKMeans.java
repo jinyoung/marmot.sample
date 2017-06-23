@@ -7,7 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Point;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.process.geo.ClusterWithKMeansParameters;

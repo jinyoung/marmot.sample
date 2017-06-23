@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.collect.Lists;
 
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Record;
 import marmot.RecordSchema;

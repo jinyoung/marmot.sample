@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.optor.AggregateFunction;
@@ -16,7 +17,7 @@ import utils.DimensionDouble;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleAssignSquareGridCell {
-	private static final String INPUT = "taxi/trip/heap";
+	private static final String INPUT = "POI/주유소_가격";
 	private static final String BORDER = "시연/서울특별시";
 	private static final String RESULT = "tmp/result";
 	
@@ -29,24 +30,26 @@ public class SampleAssignSquareGridCell {
 		
 		DataSet border = marmot.getDataSet(BORDER);
 		Envelope envl = border.getBounds();
-		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 50,
-														envl.getHeight() / 50);
+		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 100,
+														envl.getHeight() / 100);
 		
 		Program program = Program.builder("assign_fishnet_gridcell")
 								.load(INPUT)
-								.filter("status==1 || status==2")
 								.assignSquareGridCell("the_geom", envl, cellSize)
-								.transform("count:int", "count = 1")
-								.groupBy("cell_ordinal")
+								.update("count:int", "count = 1")
+								.groupBy("cell_id")
 									.taggedKeyColumns("cell_geom,cell_pos")
-									.workerCount(5)
+									.workerCount(11)
 									.aggregate(AggregateFunction.SUM("count").as("count"))
-								.transform("x:int,y:int", "x = cell_pos.x; y = cell_pos.y")
+								.update("x:int,y:int", "x = cell_pos.x; y = cell_pos.y")
 								.project("cell_geom as the_geom,x,y,count")
 								.storeMarmotFile(RESULT)
 								.build();
 
 		marmot.deleteFile(RESULT);
 		marmot.execute(program);
+		
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }

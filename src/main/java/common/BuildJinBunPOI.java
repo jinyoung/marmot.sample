@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import basic.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.remote.RemoteMarmotConnector;
@@ -35,7 +34,7 @@ public class BuildJinBunPOI {
 		String tempDs = "tmp/" + UUID.randomUUID().toString();
 		program = Program.builder("distinct_jibun")
 						.load(JIBUN)
-						.distinct("건물관리번호")
+						.distinct("건물관리번호", opts->opts.workerCount(11))
 						.store(tempDs)
 						.build();
 		result = marmot.createDataSet(tempDs, program);

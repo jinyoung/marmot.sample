@@ -2,6 +2,7 @@ package basic;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.remote.RemoteMarmotConnector;

@@ -7,7 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.collect.Maps;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.Program;
 import marmot.Record;
 import marmot.optor.AggregateFunction;

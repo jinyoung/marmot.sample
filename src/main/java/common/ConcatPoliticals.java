@@ -2,7 +2,6 @@ package common;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import basic.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.optor.JoinType;

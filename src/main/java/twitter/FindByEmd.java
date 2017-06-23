@@ -4,7 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.optor.geo.SpatialRelation;

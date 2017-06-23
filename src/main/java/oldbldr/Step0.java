@@ -6,7 +6,7 @@ import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.remote.RemoteMarmotConnector;

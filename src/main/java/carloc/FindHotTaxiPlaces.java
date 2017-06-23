@@ -2,7 +2,7 @@ package carloc;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.Program;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SpatialRelation;

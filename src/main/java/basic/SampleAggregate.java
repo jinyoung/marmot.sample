@@ -7,6 +7,7 @@ import static marmot.optor.AggregateFunction.STDDEV;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import common.SampleUtils;
 import marmot.Program;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;

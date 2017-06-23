@@ -8,7 +8,7 @@ import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.optor.geo.SpatialRelation;

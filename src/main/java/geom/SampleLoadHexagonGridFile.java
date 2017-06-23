@@ -6,7 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.remote.RemoteMarmotConnector;
@@ -34,7 +34,7 @@ public class SampleLoadHexagonGridFile {
 		Envelope bounds = dataset.getBounds();
 		bounds.expandBy(2*SIDE_LEN, SIDE_LEN);
 
-		Program program = Program.builder()
+		Program program = Program.builder("load_hexagon_grid")
 								.loadHexagonGridFile(srid, bounds, SIDE_LEN, 8)
 								.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
 								.store(RESULT)

@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Program;
 import marmot.optor.AggregateFunction;

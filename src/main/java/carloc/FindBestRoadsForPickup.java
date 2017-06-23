@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import basic.SampleUtils;
+import common.SampleUtils;
 import marmot.Program;
 import marmot.RecordSet;
 import marmot.optor.AggregateFunction;
