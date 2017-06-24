@@ -23,7 +23,7 @@ public class CalcSggHistogram {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Plan plan = RemotePlan.builder("calc_emd_histogram")
+		Plan plan = marmot.planBuilder("calc_emd_histogram")
 								.loadSpatialIndexJoin(LEFT_DATASET, RIGHT_DATASET,
 											SpatialRelation.INTERSECTS,
 											"left.{id},right.{the_geom,SIG_CD,SIG_KOR_NM}")

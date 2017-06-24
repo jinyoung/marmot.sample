@@ -47,18 +47,18 @@ public class SummarizeByHighSchool {
 			String geomCol = ds.getGeometryColumn();
 			String srid = ds.getSRID();
 		
-			plan = RemotePlan.builder("find_high_school")
-							.load(SCHOOLS)
-							.filter("type == '고등학교'")
-							.store(HIGH_SCHOOLS)
-							.build();
+			plan = marmot.planBuilder("find_high_school")
+						.load(SCHOOLS)
+						.filter("type == '고등학교'")
+						.store(HIGH_SCHOOLS)
+						.build();
 			highSchools = marmot.createDataSet(HIGH_SCHOOLS, geomCol, srid, plan);
 		}
 		
 		String geomCol = highSchools.getGeometryColumn();
 		String srid = highSchools.getSRID();
 		
-		plan = RemotePlan.builder("summarize_by_school")
+		plan = marmot.planBuilder("summarize_by_school")
 						.load(APT_LOC)
 						
 						// 고등학교 주변 1km 내의 아파트 검색.

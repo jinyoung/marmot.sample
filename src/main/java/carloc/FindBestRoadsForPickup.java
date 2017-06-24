@@ -37,10 +37,10 @@ public class FindBestRoadsForPickup {
 		
 		Plan plan;
 
-		Plan rank = RemotePlan.builder("rank")
+		Plan rank = marmot.planBuilder("rank")
 							.rank("count:D", "rank")
 							.build();
-		plan = RemotePlan.builder("match_and_rank_roads")
+		plan = marmot.planBuilder("match_and_rank_roads")
 						.load(TAXI_LOG)
 						.filter("status == 0")
 						.update("hour:int", "hour=ts.substring(8,10)")
@@ -70,7 +70,7 @@ public class FindBestRoadsForPickup {
 	
 	private static void export(MarmotClient marmot, String resultLayerName, int hour,
 								String baseName) throws IOException {
-		Plan plan = RemotePlan.builder("export")
+		Plan plan = marmot.planBuilder("export")
 								.load(resultLayerName)
 								.filter("hour == " + hour)
 								.build();

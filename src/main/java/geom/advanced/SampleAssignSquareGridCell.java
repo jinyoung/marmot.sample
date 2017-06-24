@@ -34,7 +34,7 @@ public class SampleAssignSquareGridCell {
 		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 100,
 														envl.getHeight() / 100);
 		
-		Plan plan = RemotePlan.builder("assign_fishnet_gridcell")
+		Plan plan = marmot.planBuilder("assign_fishnet_gridcell")
 								.load(INPUT)
 								.assignSquareGridCell("the_geom", envl, cellSize)
 								.update("count:int", "count = 1")

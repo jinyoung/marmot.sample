@@ -35,7 +35,7 @@ public class SampleBuildSpatialHistogram {
 		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 30,
 														envl.getHeight() / 30);
 		
-		Plan plan = RemotePlan.builder("build_spatial_histogram")
+		Plan plan = marmot.planBuilder("build_spatial_histogram")
 								// 서울특별시 구역을 기준으로 사각 그리드를 생성함.
 								.loadSquareGridFile(BORDER, cellSize)
 								// 사각 그리드 셀 중에서 서울특별시 영역만 필터링.

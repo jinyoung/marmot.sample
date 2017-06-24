@@ -28,7 +28,7 @@ public class Prep1 {
 		String geomCol = blocks.getGeometryColumn();
 		String srid = blocks.getSRID();
 
-		Plan plan = RemotePlan.builder("to_centroid")
+		Plan plan = marmot.planBuilder("to_centroid")
 								.load(BLOCKS)
 								.centroid(geomCol, geomCol)
 								.store(BLOCK_CENTERS)

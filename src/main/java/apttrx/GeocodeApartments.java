@@ -28,7 +28,7 @@ public class GeocodeApartments {
 		StopWatch watch = StopWatch.start();
 
 		Plan plan;
-		plan = RemotePlan.builder("geocode_apts")
+		plan = marmot.planBuilder("geocode_apts")
 						.load(APT_TRX)
 						
 						// 지오코딩을 위해 대상 아파트의 지번주소 구성

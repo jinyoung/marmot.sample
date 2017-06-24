@@ -30,7 +30,7 @@ public class FindPassingStation {
 		StopWatch watch = StopWatch.start();
 		
 		Geometry key = getSubwayStations(marmot, "사당역");
-		Plan plan = RemotePlan.builder("find_passing_station")
+		Plan plan = marmot.planBuilder("find_passing_station")
 								.load(TAXI_TRJ)
 								.filter("status == 3")
 								.update("the_geom:line_string",
@@ -53,7 +53,7 @@ public class FindPassingStation {
 	private static Geometry getSubwayStations(MarmotClient marmot, String stationName)
 		throws Exception {
 		String predicate = String.format("kor_sub_nm == '%s'", stationName);
-		Plan plan = RemotePlan.builder("filter_subway_stations")
+		Plan plan = marmot.planBuilder("filter_subway_stations")
 								.load(SUBWAY_STATIONS)
 								.filter(predicate)
 								.project("the_geom")

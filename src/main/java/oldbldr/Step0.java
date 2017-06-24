@@ -41,7 +41,7 @@ public class Step0 {
 						+ "old = $age >= 20 ? 1 : 0;"
 						+ "be5 = $age >= 5 ? 1 : 0;";
 		
-		Plan plan = RemotePlan.builder("find_old_buildings")
+		Plan plan = marmot.planBuilder("find_old_buildings")
 								.load(BUILDINGS)
 								.update(schema, init, trans)
 								.spatialJoin("the_geom", EMD, INTERSECTS,

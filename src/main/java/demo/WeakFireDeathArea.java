@@ -29,7 +29,7 @@ public class WeakFireDeathArea {
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
 		// 서울시 종합병원 위치에서 3km 버퍼 연산을 취해 clustered layer를 생성한다.
-		Plan plan0 = RemotePlan.builder("buffer_hospital")
+		Plan plan0 = marmot.planBuilder("buffer_hospital")
 								.load(LAYER_HOSPITAL)
 								.buffer("the_geom", "the_geom", 3000)
 								.store("tmp/weak_area/hospital3000")
@@ -38,7 +38,7 @@ public class WeakFireDeathArea {
 		marmot.createDataSet("tmp/weak_area/hospital3000", "the_geom", SRID, plan0);
 
 		// 서울시 지도에서 종합병원 3km 이내 영역과 겹치지 않은 영역을 계산한다.
-		Plan plan1 = RemotePlan.builder("difference")
+		Plan plan1 = marmot.planBuilder("difference")
 								.load(LAYER_SEOUL)
 								.differenceJoin("the_geom", "tmp/weak_area/hospital3000")
 								.store("tmp/weak_area/far_seoul")
@@ -47,7 +47,7 @@ public class WeakFireDeathArea {
 		marmot.createDataSet("tmp/weak_area/far_seoul", "the_geom", SRID, plan1);
 
 		// 화재피해 영역 중에서 서울 읍면동과 겹치는 부분을 clip 하고, 각 피해 영역의 중심점을 구한다.
-		Plan plan2 = RemotePlan.builder("fire")
+		Plan plan2 = marmot.planBuilder("fire")
 								.load(LAYER_FIRE)
 								.clipJoin("the_geom", LAYER_SEOUL)
 								.centroid("the_geom", "the_geom")

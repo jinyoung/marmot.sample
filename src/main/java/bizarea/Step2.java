@@ -37,7 +37,7 @@ public class Step2 {
 						+ "if ( cell_id == null ) {cell_id = param_cell_id;}"
 						+ "if ( sgg_cd == null ) {sgg_cd = param_sgg_cd;}";
 
-		Plan plan = RemotePlan.builder("merge")
+		Plan plan = marmot.planBuilder("merge")
 								.load(BIZ_GRID_SALES)
 								.join("std_ym,cell_id,sgg_cd", BIZ_GRID_FLOW_POP,
 										"std_ym,cell_id,sgg_cd",

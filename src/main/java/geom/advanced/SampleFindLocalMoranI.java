@@ -33,7 +33,7 @@ public class SampleFindLocalMoranI {
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
 		String tempPath = "tmp/" + UUID.randomUUID();
-		Plan plan0 = RemotePlan.builder("find_statistics")
+		Plan plan0 = marmot.planBuilder("find_statistics")
 								.load(INPUT)
 								.aggregate(AggregateFunction.COUNT(),
 											AggregateFunction.AVG(VALUE_COLUMN),
@@ -49,25 +49,25 @@ public class SampleFindLocalMoranI {
 		marmot.deleteFile(tempPath);
 		
 		double avg = (Double)params.get("avg");
-		Plan plan1 = RemotePlan.builder("find_statistics2")
-								.load(INPUT)
-								.update("diff:double", "diff = fctr_meas -" + avg)
-								.update("diff2:double,diff4:double",
-											"diff2 = diff * diff; diff4=diff2*diff2")
-								.aggregate(AggregateFunction.SUM("diff").as("diffSum"),
-											AggregateFunction.SUM("diff2").as("diff2Sum"),
-											AggregateFunction.SUM("diff4").as("diff4Sum"))
-								.storeMarmotFile(tempPath)
-								.build();
+		Plan plan1 = marmot.planBuilder("find_statistics2")
+							.load(INPUT)
+							.update("diff:double", "diff = fctr_meas -" + avg)
+							.update("diff2:double,diff4:double",
+										"diff2 = diff * diff; diff4=diff2*diff2")
+							.aggregate(AggregateFunction.SUM("diff").as("diffSum"),
+										AggregateFunction.SUM("diff2").as("diff2Sum"),
+										AggregateFunction.SUM("diff4").as("diff4Sum"))
+							.storeMarmotFile(tempPath)
+							.build();
 		marmot.execute(plan1);
 		Record result2 = marmot.readMarmotFile(tempPath).stream().findAny().get();
 		params.putAll(result2.toMap());
 		marmot.deleteFile(tempPath);
 		
-		Plan plan = RemotePlan.builder("local_spatial_auto_correlation")
-								.loadLocalMoranI(INPUT, "UID", "FCTR_MEAS", 1000,
+		Plan plan = marmot.planBuilder("local_spatial_auto_correlation")
+								.loadLocalMoranI(INPUT, "uid", "fctr_meas", 1000,
 												LISAWeight.FIXED_DISTANCE_BAND)
-								.project("UID,moran_i,moran_zscore,moran_pvalue")
+								.project("uid,moran_i,moran_zscore,moran_pvalue")
 								.sort("UID")
 								.storeMarmotFile(RESULT)
 								.build();

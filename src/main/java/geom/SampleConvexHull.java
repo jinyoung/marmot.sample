@@ -26,7 +26,7 @@ public class SampleConvexHull {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		Plan plan = RemotePlan.builder("convex_hull")
+		Plan plan = marmot.planBuilder("convex_hull")
 								.load(INPUT)
 								.aggregate(ConvexHull("the_geom"))
 								.store(RESULT)

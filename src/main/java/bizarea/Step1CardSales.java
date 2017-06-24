@@ -10,7 +10,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.optor.JoinOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -43,7 +42,7 @@ public class Step1CardSales {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		Plan plan = RemotePlan.builder("card_sales")
+		Plan plan = marmot.planBuilder("card_sales")
 								// 전국 카드매출액 파일을 읽는다.
 								.load(CARD_SALES)
 								// 시간대 단위의 매출액은 모두 합쳐 하루 매출액을 계산한다. 

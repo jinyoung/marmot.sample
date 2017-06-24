@@ -35,7 +35,7 @@ public class BuildJinBunPOI {
 
 		StopWatch watch = StopWatch.start();
 		String tempDs = "tmp/" + UUID.randomUUID().toString();
-		plan = RemotePlan.builder("distinct_jibun")
+		plan = marmot.planBuilder("distinct_jibun")
 						.load(JIBUN)
 						.distinct("건물관리번호", new MapReduceOptions<>().workerCount(11)) 
 						.store(tempDs)
@@ -47,7 +47,7 @@ public class BuildJinBunPOI {
 			String geomCol = info.getGeometryColumn();
 			String srid = info.getSRID();
 			
-			plan = RemotePlan.builder("build_jibun_poi")
+			plan = marmot.planBuilder("build_jibun_poi")
 							.load(BUILD_POI)
 							.project(geomCol + ",도로명코드,건물본번,건물부번,지하여부,법정동코드")
 							.join("도로명코드,건물본번,건물부번,지하여부",

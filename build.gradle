@@ -23,8 +23,8 @@ repositories {
 }
 
 dependencies {
-//	compile 'etri:marmot.client:1.0'
-	compile project(':marmot.client')
+	compile 'etri:marmot.client:1.1'
+//	compile project(':marmot.client')
 }
 
 task sourceJar(type: Jar) {

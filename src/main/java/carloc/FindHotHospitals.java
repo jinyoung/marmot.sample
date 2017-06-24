@@ -27,7 +27,7 @@ public class FindHotHospitals {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Plan plan = RemotePlan.builder("find_hot_hospitals")
+		Plan plan = marmot.planBuilder("find_hot_hospitals")
 								.load(TAXI_LOG)
 								.filter("status==1 || status==2")
 								.spatialJoin("the_geom", HOSPITAL,

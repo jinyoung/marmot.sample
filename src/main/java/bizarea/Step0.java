@@ -12,7 +12,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.DimensionDouble;
@@ -49,7 +48,7 @@ public class Step0 {
 		Envelope bounds = info.getBounds();
 		DimensionDouble cellSize = new DimensionDouble(100, 100);
 		
-		Plan plan = RemotePlan.builder("get_biz_grid")
+		Plan plan = marmot.planBuilder("get_biz_grid")
 								// 용도지구에 대한 100m 크기의 그리드를 생성 
 								.loadSquareGridFile(bounds, cellSize)
 								// 상업지구에 겹치는 그리드 셀만 추출한다.
@@ -88,7 +87,7 @@ public class Step0 {
 		String geomCol = political.getGeometryColumn();
 		String srid = political.getSRID();
 		
-		Plan plan = RemotePlan.builder("filter_big_cities")
+		Plan plan = marmot.planBuilder("filter_big_cities")
 								.load(POLITICAL)
 								.update("sid_cd:string,sgg_cd:string",
 										"sid_cd = bjd_cd.substring(0,2);"
@@ -114,7 +113,7 @@ public class Step0 {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 
-		Plan plan = RemotePlan.builder("filter_biz_area")
+		Plan plan = marmot.planBuilder("filter_biz_area")
 								.load(LAND_USAGE)
 								.filter(initExpr, "$types.contains(dgm_nm)")
 								.project("the_geom")

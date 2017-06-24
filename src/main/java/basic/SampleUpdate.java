@@ -5,7 +5,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -38,7 +37,7 @@ public class SampleUpdate {
 							.project("the_geom,area,sig_cd,kor_sub_nm")
 							.store(RESULT)
 							.build();
-		marmot.deleteFile(RESULT);
+		marmot.deleteDataSet(RESULT);
 		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
 
 		SampleUtils.printPrefix(result, 10);

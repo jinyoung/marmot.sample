@@ -35,7 +35,7 @@ public class Test2017_1 {
 		Envelope bounds = info.getBounds();
 		DimensionDouble cellSize = new DimensionDouble(30, 30);
 		
-		Plan plan = RemotePlan.builder("get_biz_grid")
+		Plan plan = marmot.planBuilder("get_biz_grid")
 								.loadSquareGridFile(ADDR_BLD, cellSize)
 								.centroid("the_geom", "the_geom")
 //								.aggregateJoin("the_geom", ADDR_BLD_UTILS_CLTS,

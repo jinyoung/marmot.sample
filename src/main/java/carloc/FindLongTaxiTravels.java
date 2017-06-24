@@ -25,7 +25,7 @@ public class FindLongTaxiTravels {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		Plan plan = RemotePlan.builder("find_long_travels")
+		Plan plan = marmot.planBuilder("find_long_travels")
 								.load(TAXI_TRJ)
 								.filter("status == 3")
 								.update("length:double",

@@ -40,7 +40,7 @@ public class CalcHeatMap {
 		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 30,
 														envl.getHeight() / 30);
 		
-		Plan plan = RemotePlan.builder("calc_heat_map")
+		Plan plan = marmot.planBuilder("calc_heat_map")
 								.loadSquareGridFile(envl, cellSize)
 								.buildSpatialHistogram("the_geom", TAXI_LOG,
 													HistogramCounter.COUNT, null, "count")

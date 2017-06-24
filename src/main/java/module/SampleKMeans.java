@@ -49,7 +49,7 @@ public class SampleKMeans {
 	
 	private static List<Point> getInitCentroids(MarmotClient marmot, int ncentroids,
 												double ratio) {
-		Plan plan = RemotePlan.builder("get_init_centroids")
+		Plan plan = marmot.planBuilder("get_init_centroids")
 								.load(SGG)
 								.sample(ratio)
 								.limit(ncentroids)

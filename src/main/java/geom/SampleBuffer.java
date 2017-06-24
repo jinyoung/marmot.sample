@@ -24,7 +24,7 @@ public class SampleBuffer {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Plan plan = RemotePlan.builder("buffer")
+		Plan plan = marmot.planBuilder("buffer")
 								.load(INPUT)
 								.buffer("the_geom", "the_geom", 50)
 								.store(RESULT)

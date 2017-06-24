@@ -25,7 +25,7 @@ public class SampleLoadSpatialIndexJoin {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Plan plan = RemotePlan.builder("load_spatial_index_join")
+		Plan plan = marmot.planBuilder("load_spatial_index_join")
 								.loadSpatialIndexJoin(OUTER, INNER, SpatialRelation.INTERSECTS,
 														"left.*,right.{the_geom as the_geom2}")
 								.intersection("the_geom", "the_geom2", "the_geom", 1)

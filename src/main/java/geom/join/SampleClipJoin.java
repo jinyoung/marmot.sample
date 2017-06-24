@@ -24,7 +24,7 @@ public class SampleClipJoin {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Plan plan = RemotePlan.builder("sample_clip_join")
+		Plan plan = marmot.planBuilder("sample_clip_join")
 								.load(OUTER)
 								.clipJoin("the_geom", INNER)
 								.storeMarmotFile(RESULT)

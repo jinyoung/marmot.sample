@@ -33,7 +33,7 @@ public class SampleLoadSquareGridFile {
 		String geomCol = dataset.getGeometryColumn();
 		DimensionDouble dim = new DimensionDouble(SIDE_LEN, SIDE_LEN);
 
-		Plan plan = RemotePlan.builder("sample_load_squaregrid")
+		Plan plan = marmot.planBuilder("sample_load_squaregrid")
 								.loadSquareGridFile(INPUT, dim)
 								.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
 								.store(RESULT)

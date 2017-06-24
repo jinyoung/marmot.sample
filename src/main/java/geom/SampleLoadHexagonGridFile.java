@@ -35,7 +35,7 @@ public class SampleLoadHexagonGridFile {
 		Envelope bounds = dataset.getBounds();
 		bounds.expandBy(2*SIDE_LEN, SIDE_LEN);
 
-		Plan plan = RemotePlan.builder("load_hexagon_grid")
+		Plan plan = marmot.planBuilder("load_hexagon_grid")
 								.loadHexagonGridFile(srid, bounds, SIDE_LEN, 8)
 								.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
 								.store(RESULT)

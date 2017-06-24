@@ -27,11 +27,11 @@ public class FindHotTaxiPlaces {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Plan rank = RemotePlan.builder("count")
+		Plan rank = marmot.planBuilder("count")
 								.rank("count:D", "rank")
 								.build();
 		
-		Plan plan = RemotePlan.builder("find_hot_taxi_places")
+		Plan plan = marmot.planBuilder("find_hot_taxi_places")
 								.load(TAXI_LOG)
 								.filter("status==1 || status==2")
 								.spatialJoin("the_geom", EMD, SpatialRelation.INTERSECTS,

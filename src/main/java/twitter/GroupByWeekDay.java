@@ -26,7 +26,7 @@ public class GroupByWeekDay {
 
 		marmot.deleteFile(RESULT);
 
-		Plan plan = RemotePlan.builder("group_by_weekday_and_count")
+		Plan plan = marmot.planBuilder("group_by_weekday_and_count")
 								.load(TWEETS)
 								.project("id,created_at")
 								.update("week_day:int", "week_day = ST_DTWeekDay(created_at)")

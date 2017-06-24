@@ -25,7 +25,7 @@ public class SampleSpatialSemiJoinDistance {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Plan plan = RemotePlan.builder("within_distance")
+		Plan plan = marmot.planBuilder("within_distance")
 								.load(INPUT)
 								.spatialSemiJoin("the_geom", PARAMS,
 												SpatialRelation.WITHIN_DISTANCE(30))

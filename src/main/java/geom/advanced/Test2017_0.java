@@ -49,7 +49,7 @@ public class Test2017_0 {
 									.collect(Collectors.joining(",", "[", "]"));
 		initExpr = "$codes = Sets.newHashSet(); $codes.addAll(" + initExpr + ")";
 		
-		Plan plan = RemotePlan.builder("get_biz_grid")
+		Plan plan = marmot.planBuilder("get_biz_grid")
 								.load(ADDR_BLD)
 								.filter(initExpr, "$codes.contains(bdtyp_cd)")
 								.project("the_geom,bd_mgt_sn")

@@ -42,7 +42,7 @@ public class Step1 {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		Plan plan = RemotePlan.builder("flow_pop_on_emd")
+		Plan plan = marmot.planBuilder("flow_pop_on_emd")
 								.load(FLOW_POP)
 								.join("block_cd", BLOCK_CENTERS, "block_cd",
 										"param.*-{block_cd},*",

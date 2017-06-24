@@ -34,7 +34,7 @@ public class SampleIndexedRangeQuery {
 		Envelope bounds = GeoClientUtils.expandBy(info.getBounds(), -10000);
 		Geometry key = GeoClientUtils.toPolygon(bounds);
 		
-		Plan plan = RemotePlan.builder("sample_indexed_rangequery")
+		Plan plan = marmot.planBuilder("sample_indexed_rangequery")
 								.load(BUILDINGS, SpatialRelation.INTERSECTS, key)
 								.project("the_geom,시군구코드,건물명")
 								.store(RESULT)

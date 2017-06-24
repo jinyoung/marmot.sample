@@ -39,7 +39,7 @@ public class SummarizeBySgg {
 		String geomCol = emd.getGeometryColumn();
 		String srid = emd.getSRID();
 		
-		plan = RemotePlan.builder("summarize_by_station")
+		plan = marmot.planBuilder("summarize_by_station")
 						.load(APT_TRX)
 						.join("시군구,번지,단지명", APT_LOC, "시군구,번지,단지명", "*,param.{info}", null)
 						.update("평당거래액:int",

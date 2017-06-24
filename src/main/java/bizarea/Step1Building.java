@@ -41,7 +41,7 @@ public class Step1Building {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		Plan plan = RemotePlan.builder("building_registry")
+		Plan plan = marmot.planBuilder("building_registry")
 								.load(BUILDINGS)
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여,
 								// 대도시 상업지역과 겹치는 유동인구 구역을 뽑는다. 

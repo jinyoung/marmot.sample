@@ -25,7 +25,7 @@ public class SampleSpatialJoin {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Plan plan = RemotePlan.builder("spatial_join")
+		Plan plan = marmot.planBuilder("spatial_join")
 								.load(BUS_STOPS)
 								.spatialJoin("the_geom", EMD, SpatialRelation.INTERSECTS,
 											"*-{EMD_CD},param.*-{the_geom}")

@@ -26,7 +26,7 @@ public class SampleDissolve {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Plan plan = RemotePlan.builder("dissolve")
+		Plan plan = marmot.planBuilder("dissolve")
 								.load(INPUT)
 								.project("the_geom,sig_cd")
 								.dissolve("sig_cd", new MapReduceOptions<>().workerCount(NPARTS))

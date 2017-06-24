@@ -48,7 +48,7 @@ public class ConcatPoliticals {
 		String srid = info.getSRID();
 
 		Plan plan;
-		plan = RemotePlan.builder("merge_politicals")
+		plan = marmot.planBuilder("merge_politicals")
 						.load(LI)
 						.update("emd_cd2:string", "emd_cd2 = li_cd.substring(0,8)")
 						.join("emd_cd2", EMD, "emd_cd",
