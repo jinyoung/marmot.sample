@@ -9,7 +9,8 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.DimensionDouble;
@@ -34,7 +35,7 @@ public class Test2017_1 {
 		Envelope bounds = info.getBounds();
 		DimensionDouble cellSize = new DimensionDouble(30, 30);
 		
-		Program program = Program.builder("get_biz_grid")
+		Plan plan = RemotePlan.builder("get_biz_grid")
 								.loadSquareGridFile(ADDR_BLD, cellSize)
 								.centroid("the_geom", "the_geom")
 //								.aggregateJoin("the_geom", ADDR_BLD_UTILS_CLTS,
@@ -46,7 +47,7 @@ public class Test2017_1 {
 								.store(GRID)
 								.build();
 		marmot.deleteDataSet(GRID);
-		DataSet result = marmot.createDataSet(GRID, "the_geom", info.getSRID(), program);
+		DataSet result = marmot.createDataSet(GRID, "the_geom", info.getSRID(), plan);
 		
 		SampleUtils.printPrefix(result, 10);
 	}

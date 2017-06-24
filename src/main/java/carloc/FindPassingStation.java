@@ -6,7 +6,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
@@ -29,7 +30,7 @@ public class FindPassingStation {
 		StopWatch watch = StopWatch.start();
 		
 		Geometry key = getSubwayStations(marmot, "사당역");
-		Program program = Program.builder("find_passing_station")
+		Plan plan = RemotePlan.builder("find_passing_station")
 								.load(TAXI_TRJ)
 								.filter("status == 3")
 								.update("the_geom:line_string",
@@ -40,7 +41,7 @@ public class FindPassingStation {
 								.build();
 		
 		marmot.deleteDataSet(OUTPUT);
-		DataSet result = marmot.createDataSet(OUTPUT, "the_geom", SRID, program);
+		DataSet result = marmot.createDataSet(OUTPUT, "the_geom", SRID, plan);
 		
 		SampleUtils.printPrefix(result, 5);
 		
@@ -52,12 +53,12 @@ public class FindPassingStation {
 	private static Geometry getSubwayStations(MarmotClient marmot, String stationName)
 		throws Exception {
 		String predicate = String.format("kor_sub_nm == '%s'", stationName);
-		Program program = Program.builder()
+		Plan plan = RemotePlan.builder("filter_subway_stations")
 								.load(SUBWAY_STATIONS)
 								.filter(predicate)
 								.project("the_geom")
 								.build();
-		return marmot.executeSequentially(program)
+		return marmot.executeLocally(plan)
 						.stream()
 						.map(rec -> rec.getGeometry(0))
 						.findAny()

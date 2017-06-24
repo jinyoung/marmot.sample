@@ -4,7 +4,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -27,13 +28,13 @@ public class Prep1 {
 		String geomCol = blocks.getGeometryColumn();
 		String srid = blocks.getSRID();
 
-		Program program = Program.builder("to_centroid")
+		Plan plan = RemotePlan.builder("to_centroid")
 								.load(BLOCKS)
 								.centroid(geomCol, geomCol)
 								.store(BLOCK_CENTERS)
 								.build();
 		marmot.deleteDataSet(BLOCK_CENTERS);
-		DataSet result = marmot.createDataSet(BLOCK_CENTERS, geomCol, srid, program);
+		DataSet result = marmot.createDataSet(BLOCK_CENTERS, geomCol, srid, plan);
 		
 		SampleUtils.printPrefix(result, 10);
 	}

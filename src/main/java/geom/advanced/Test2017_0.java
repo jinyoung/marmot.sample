@@ -8,7 +8,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -48,14 +49,14 @@ public class Test2017_0 {
 									.collect(Collectors.joining(",", "[", "]"));
 		initExpr = "$codes = Sets.newHashSet(); $codes.addAll(" + initExpr + ")";
 		
-		Program program = Program.builder("get_biz_grid")
+		Plan plan = RemotePlan.builder("get_biz_grid")
 								.load(ADDR_BLD)
 								.filter(initExpr, "$codes.contains(bdtyp_cd)")
 								.project("the_geom,bd_mgt_sn")
 								.store(ADDR_BLD_UTILS)
 								.build();
 		marmot.deleteDataSet(ADDR_BLD_UTILS);
-		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, "the_geom", srid, program);
+		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, "the_geom", srid, plan);
 		result.cluster();
 		
 		SampleUtils.printPrefix(result, 10);

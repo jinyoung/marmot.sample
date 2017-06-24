@@ -6,7 +6,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.DimensionDouble;
@@ -32,14 +33,14 @@ public class SampleLoadSquareGridFile {
 		String geomCol = dataset.getGeometryColumn();
 		DimensionDouble dim = new DimensionDouble(SIDE_LEN, SIDE_LEN);
 
-		Program program = Program.builder("sample_load_squaregrid")
+		Plan plan = RemotePlan.builder("sample_load_squaregrid")
 								.loadSquareGridFile(INPUT, dim)
 								.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
 								.store(RESULT)
 								.build();
 
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, program);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 10);

@@ -9,8 +9,10 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.optor.AggregateFunction;
+import marmot.optor.JoinOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -40,10 +42,11 @@ public class Step1 {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		Program program = Program.builder("flow_pop_on_emd")
+		Plan plan = RemotePlan.builder("flow_pop_on_emd")
 								.load(FLOW_POP)
 								.join("block_cd", BLOCK_CENTERS, "block_cd",
-										"param.*-{block_cd},*", opt->opt.workerCount(32))
+										"param.*-{block_cd},*",
+										new JoinOptions().workerCount(32))
 								.spatialJoin("the_geom", EMD, INTERSECTS,
 										"*,param.{emd_cd,emd_kor_nm as emd_nm}")
 								.groupBy("emd_cd")
@@ -53,7 +56,7 @@ public class Step1 {
 								.storeMarmotFile(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 		
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}

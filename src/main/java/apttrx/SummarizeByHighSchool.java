@@ -10,7 +10,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -37,7 +38,7 @@ public class SummarizeByHighSchool {
 
 		StopWatch watch = StopWatch.start();
 
-		Program program;
+		Plan plan;
 		
 		//전국초중등학교 정보에서 고등학교만 뽑는다.
 		DataSet highSchools = marmot.getDataSet(HIGH_SCHOOLS, null);
@@ -46,18 +47,18 @@ public class SummarizeByHighSchool {
 			String geomCol = ds.getGeometryColumn();
 			String srid = ds.getSRID();
 		
-			program = Program.builder()
+			plan = RemotePlan.builder("find_high_school")
 							.load(SCHOOLS)
 							.filter("type == '고등학교'")
 							.store(HIGH_SCHOOLS)
 							.build();
-			highSchools = marmot.createDataSet(HIGH_SCHOOLS, geomCol, srid, program);
+			highSchools = marmot.createDataSet(HIGH_SCHOOLS, geomCol, srid, plan);
 		}
 		
 		String geomCol = highSchools.getGeometryColumn();
 		String srid = highSchools.getSRID();
 		
-		program = Program.builder("summarize_by_school")
+		plan = RemotePlan.builder("summarize_by_school")
 						.load(APT_LOC)
 						
 						// 고등학교 주변 1km 내의 아파트 검색.
@@ -68,7 +69,7 @@ public class SummarizeByHighSchool {
 						
 						// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
 						.join("시군구,번지,단지명", APT_TRX, "시군구,번지,단지명",
-								"the_geom,id,name,param.*")
+								"the_geom,id,name,param.*", null)
 						// 평당 거래액 계산.
 						.update("평당거래액:int",
 								"평당거래액 = (int)Math.round((거래금액*3.3) / 전용면적);")
@@ -88,8 +89,7 @@ public class SummarizeByHighSchool {
 						.build();
 		
 		marmot.deleteDataSet(RESULT);		
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", srid,
-												program);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", srid, plan);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 3);

@@ -6,7 +6,8 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.optor.AggregateFunction;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -33,7 +34,7 @@ public class SampleAssignSquareGridCell {
 		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 100,
 														envl.getHeight() / 100);
 		
-		Program program = Program.builder("assign_fishnet_gridcell")
+		Plan plan = RemotePlan.builder("assign_fishnet_gridcell")
 								.load(INPUT)
 								.assignSquareGridCell("the_geom", envl, cellSize)
 								.update("count:int", "count = 1")
@@ -47,7 +48,7 @@ public class SampleAssignSquareGridCell {
 								.build();
 
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);

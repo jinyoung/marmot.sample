@@ -3,7 +3,9 @@ package apttrx;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
+import marmot.optor.MapReduceOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
@@ -25,8 +27,8 @@ public class GeocodeApartments {
 
 		StopWatch watch = StopWatch.start();
 
-		Program program;
-		program = Program.builder("geocode_apts")
+		Plan plan;
+		plan = RemotePlan.builder("geocode_apts")
 						.load(APT_TRX)
 						
 						// 지오코딩을 위해 대상 아파트의 지번주소 구성
@@ -38,7 +40,7 @@ public class GeocodeApartments {
 						// partition으로 나눠서 수행하도록한다.
 						// 이렇게 되면 다음에 수행되는 지오코딩이 각 partition별로
 						// 수행되기 때문에 높은 병렬성을 갖게된다.
-						.distinct("addr", opts->opts.workerCount(29))
+						.distinct("addr", new MapReduceOptions<>().workerCount(29))
 						// 지오코딩을 통해 아파트 좌표 계산
 						.lookupPostalAddress("addr", "info")
 						.update("the_geom:multi_polygon", "the_geom = info.?geometry")
@@ -50,7 +52,7 @@ public class GeocodeApartments {
 						.build();
 		
 		marmot.deleteDataSet(RESULT);		
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", program);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 	}
 }

@@ -7,7 +7,8 @@ import static marmot.optor.AggregateFunction.MIN;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -26,14 +27,14 @@ public class SampleGroupByAggregate {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		Program program = Program.builder("group_by")
-								.load(INPUT)
-								.groupBy("sig_cd")
-									.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"))
-								.storeMarmotFile(RESULT)
-								.build();
+		Plan plan = marmot.planBuilder("group_by")
+							.load(INPUT)
+							.groupBy("sig_cd")
+								.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"))
+							.storeMarmotFile(RESULT)
+							.build();
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}

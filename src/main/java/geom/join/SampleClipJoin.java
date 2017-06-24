@@ -3,7 +3,8 @@ package geom.join;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -23,14 +24,14 @@ public class SampleClipJoin {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Program program = Program.builder("sample_clip_join")
+		Plan plan = RemotePlan.builder("sample_clip_join")
 								.load(OUTER)
 								.clipJoin("the_geom", INNER)
 								.storeMarmotFile(RESULT)
 								.build();
 
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);

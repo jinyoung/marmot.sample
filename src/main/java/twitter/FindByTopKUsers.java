@@ -8,7 +8,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.optor.AggregateFunction;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -38,14 +39,14 @@ public class FindByTopKUsers {
 		String userIdsStr = userIds.stream().collect(Collectors.joining(","));
 		String inializer = String.format("$target_users = Lists.newArrayList(%s)", userIdsStr);
 		String pred = "$target_users.contains(user_id)";
-		Program program = Program.builder("find_by_userids")
+		Plan plan = RemotePlan.builder("find_by_userids")
 								.load(TWEETS)
 								.filter(inializer, pred)
 								.project("the_geom,id")
 								.store(RESULT)
 								.build();
 		marmot.deleteDataSet(RESULT);
-		marmot.createDataSet(RESULT, "the_geom", info.getSRID(), program);
+		marmot.createDataSet(RESULT, "the_geom", info.getSRID(), plan);
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
@@ -55,13 +56,13 @@ public class FindByTopKUsers {
 		// 가장 자주 tweet을 한 사용자 식별자들을 저장할 임시 파일 이름을 생성한다.
 		String tempFile = "tmp/" + UUID.randomUUID().toString();
 
-		Program program = Program.builder("list_topk_users")
+		Plan plan = RemotePlan.builder("list_topk_users")
 								.load(TWEETS)
 								.groupBy("user_id").aggregate(AggregateFunction.COUNT())
 								.pickTopK("count:D", 5)
 								.storeMarmotFile(tempFile)
 								.build();
-		marmot.execute(program);
+		marmot.execute(plan);
 		SampleUtils.printMarmotFilePrefix(marmot, tempFile, 10);
 		
 		try {

@@ -8,7 +8,8 @@ import static marmot.optor.AggregateFunction.STDDEV;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -27,14 +28,14 @@ public class SampleAggregate {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		Program program = Program.builder("sample_aggreate")
-								.load(INPUT)
-								.filter("휘발유 > 0")
-								.aggregate(MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"))
-								.storeMarmotFile(RESULT)
-								.build();
+		Plan plan = marmot.planBuilder("sample_aggreate")
+							.load(INPUT)
+							.filter("휘발유 > 0")
+							.aggregate(MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"))
+							.storeMarmotFile(RESULT)
+							.build();
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 		
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}

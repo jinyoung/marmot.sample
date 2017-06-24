@@ -9,7 +9,8 @@ import static marmot.optor.AggregateFunction.SUM;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
@@ -33,15 +34,14 @@ public class SummarizeBySgg {
 
 		StopWatch watch = StopWatch.start();
 
-		Program program;
+		Plan plan;
 		DataSet emd = marmot.getDataSet(SGG);
 		String geomCol = emd.getGeometryColumn();
 		String srid = emd.getSRID();
 		
-		program = Program.builder("summarize_by_station")
+		plan = RemotePlan.builder("summarize_by_station")
 						.load(APT_TRX)
-						.join("시군구,번지,단지명", APT_LOC, "시군구,번지,단지명",
-								"*,param.{info}")
+						.join("시군구,번지,단지명", APT_LOC, "시군구,번지,단지명", "*,param.{info}", null)
 						.update("평당거래액:int",
 								"평당거래액 = (int)Math.round((거래금액*3.3) / 전용면적);")
 						.update("sgg_cd:string", "sgg_cd = info.getSggCode()")
@@ -54,14 +54,14 @@ public class SummarizeBySgg {
 						.update("평당거래액:int", "평당거래액=평당거래액")
 						
 						.join("sgg_cd", SGG, "sig_cd",
-								String.format("*,param.{%s,sig_kor_nm}", geomCol))
+								String.format("*,param.{%s,sig_kor_nm}", geomCol), null)
 						.sort("거래건수:D")
 						
 						.store(RESULT)
 						.build();
 		
 		marmot.deleteDataSet(RESULT);		
-		marmot.createDataSet(RESULT, geomCol, srid, program);
+		marmot.createDataSet(RESULT, geomCol, srid, plan);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 	}
 }

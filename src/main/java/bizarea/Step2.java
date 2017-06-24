@@ -6,7 +6,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
+import marmot.optor.JoinOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -35,7 +37,7 @@ public class Step2 {
 						+ "if ( cell_id == null ) {cell_id = param_cell_id;}"
 						+ "if ( sgg_cd == null ) {sgg_cd = param_sgg_cd;}";
 
-		Program program = Program.builder("merge")
+		Plan plan = RemotePlan.builder("merge")
 								.load(BIZ_GRID_SALES)
 								.join("std_ym,cell_id,sgg_cd", BIZ_GRID_FLOW_POP,
 										"std_ym,cell_id,sgg_cd",
@@ -44,7 +46,7 @@ public class Step2 {
 											+ "std_ym as param_std_ym,"
 											+ "cell_id as param_cell_id,"
 											+ "sgg_cd as param_sgg_cd,"
-											+ "flow_pop}", opt->opt.workerCount(16))
+											+ "flow_pop}", new JoinOptions().workerCount(16))
 								.update(script)
 								.project("*-{param_the_geom,param_std_ym,param_cell_id,param_sgg_cd}")
 								// 최종 결과에 행정도 코드를 부여한다.
@@ -53,7 +55,7 @@ public class Step2 {
 								.store(RESULT)
 								.build();
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, program);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
 		
 		SampleUtils.printPrefix(result, 10);
 	}

@@ -7,7 +7,8 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.geo.GeoClientUtils;
 import marmot.optor.geo.HistogramCounter;
 import marmot.remote.RemoteMarmotConnector;
@@ -31,14 +32,15 @@ public class CalcHeatMap {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		DataSet borderLayer = marmot.getDataSet(SEOUL);
-		Envelope envl = borderLayer.getBounds();
+		DataSet border = marmot.getDataSet(SEOUL);
+		String srid = border.getSRID();
+		Envelope envl = border.getBounds();
 		Polygon key = GeoClientUtils.toPolygon(envl);
 		
 		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 30,
 														envl.getHeight() / 30);
 		
-		Program program = Program.builder("calc_heat_map")
+		Plan plan = RemotePlan.builder("calc_heat_map")
 								.loadSquareGridFile(envl, cellSize)
 								.buildSpatialHistogram("the_geom", TAXI_LOG,
 													HistogramCounter.COUNT, null, "count")
@@ -46,7 +48,7 @@ public class CalcHeatMap {
 								.build();
 
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", SRID, program);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", srid, plan);
 		
 		SampleUtils.printPrefix(result, 5);
 	}

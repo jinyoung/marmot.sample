@@ -4,7 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -25,16 +25,16 @@ public class SampleFilter {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		String geomCol = input.getGeometryColumn();
+		String srid = input.getSRID();
 
-		Program program = Program.builder("filter")
-								.load(INPUT)
-								.filter("휘발유 > 2000")
-								.project("상호,휘발유")
-								.store(RESULT)
-								.build();
-
+		Plan plan = marmot.planBuilder("filter")
+							.load(INPUT)
+							.filter("휘발유 > 2000")
+							.project("the_geom,상호,휘발유")
+							.store(RESULT)
+							.build();
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, program);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
 		
 		SampleUtils.printPrefix(result, 10);
 	}

@@ -9,7 +9,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
+import marmot.optor.JoinOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
@@ -41,7 +43,7 @@ public class Step1FlowPop {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		Program program = Program.builder("flow_pop")
+		Plan plan = RemotePlan.builder("flow_pop")
 								.load(FLOW_POP)
 								// 시간대 단위의 유동인구는 모두 합쳐 하루 매출액을 계산한다. 
 								.update("flow_pop:double", avgExpr)
@@ -49,7 +51,8 @@ public class Step1FlowPop {
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 								// 유동인구 구역을 뽑는다. 
 								.join("block_cd", BIZ_GRID, "block_cd",
-										"param.*,std_ym,flow_pop", opt->opt.workerCount(32))
+										"param.*,std_ym,flow_pop",
+										new JoinOptions().workerCount(32))
 								// 한 그리드 셀에 여러 소지역 유동인구 정보가 존재하면,
 								// 해당 유동인구들의 평균을 구한다.
 								.groupBy("std_ym,cell_id")
@@ -59,7 +62,7 @@ public class Step1FlowPop {
 								.store(RESULT)
 								.build();
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, program);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

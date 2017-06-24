@@ -6,7 +6,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -35,7 +36,7 @@ public class FindByEmd {
 		// 프로그램 수행 이전에 기존 OUTPUT_LAYER을 제거시킨다.
 		marmot.deleteDataSet(RESULT);
 		
-		Program program = Program.builder("find_emd")
+		Plan plan = RemotePlan.builder("find_emd")
 								// tweet 레이어를 읽어, 서초동 행정 영역과 겹치는 트위 레코드를 검색한다.
 								.load(TWEETS, SpatialRelation.INTERSECTS, border)
 								.project("the_geom,id")
@@ -44,7 +45,7 @@ public class FindByEmd {
 								.build();
 		
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", info.getSRID(), program);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", info.getSRID(), plan);
 		
 		SampleUtils.printPrefix(result, 10);
 	}
@@ -53,7 +54,7 @@ public class FindByEmd {
 	private static Geometry getBorder(MarmotClient marmot) throws Exception {
 		// '읍면동 행정구역' 레이어에서 강남구 행정 영역 정보를 검색하는 프로그램을 구성한다.
 		//
-		Program program = Program.builder("find_emd")
+		Plan plan = RemotePlan.builder("find_emd")
 								// 읍면동 행정구역 레이어를 읽는다.
 								.load(EMD)
 								// 강남구 레코드를 검색한다.
@@ -62,7 +63,7 @@ public class FindByEmd {
 								.project("the_geom")
 								.build();
 		// 프로그램 수행으로 생성된 임시 레이어를 읽어 강남구 영역을 읽는다.
-		return marmot.executeSequentially(program)
+		return marmot.executeLocally(plan)
 						.stream()
 						.findAny().get()
 						.getGeometry(0);

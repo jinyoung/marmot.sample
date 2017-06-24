@@ -9,7 +9,8 @@ import com.vividsolutions.jts.geom.Point;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.process.geo.ClusterWithKMeansParameters;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -48,14 +49,14 @@ public class SampleKMeans {
 	
 	private static List<Point> getInitCentroids(MarmotClient marmot, int ncentroids,
 												double ratio) {
-		Program program = Program.builder()
+		Plan plan = RemotePlan.builder("get_init_centroids")
 								.load(SGG)
 								.sample(ratio)
 								.limit(ncentroids)
 								.project("the_geom")
 								.centroid("the_geom", "the_geom")
 								.build();
-		return marmot.executeSequentially(program).stream()
+		return marmot.executeLocally(plan).stream()
 					.map(r -> (Point)r.getGeometry(0))
 					.collect(Collectors.toList());
 	}

@@ -3,7 +3,8 @@ package carloc;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
@@ -26,11 +27,11 @@ public class FindHotTaxiPlaces {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Program rank = Program.builder()
+		Plan rank = RemotePlan.builder("count")
 								.rank("count:D", "rank")
 								.build();
 		
-		Program program = Program.builder("find_hot_taxi_places")
+		Plan plan = RemotePlan.builder("find_hot_taxi_places")
 								.load(TAXI_LOG)
 								.filter("status==1 || status==2")
 								.spatialJoin("the_geom", EMD, SpatialRelation.INTERSECTS,
@@ -46,7 +47,7 @@ public class FindHotTaxiPlaces {
 
 		StopWatch watch = StopWatch.start();
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);

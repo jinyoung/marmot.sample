@@ -4,7 +4,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
+import marmot.optor.MapReduceOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -24,15 +26,15 @@ public class SampleDissolve {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Program program = Program.builder()
+		Plan plan = RemotePlan.builder("dissolve")
 								.load(INPUT)
 								.project("the_geom,sig_cd")
-								.dissolve("sig_cd", NPARTS)
+								.dissolve("sig_cd", new MapReduceOptions<>().workerCount(NPARTS))
 								.store(RESULT)
 								.build();
 
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", program);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan);
 
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 10);

@@ -2,7 +2,8 @@ package geom.advanced;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.optor.geo.LISAWeight;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -23,7 +24,7 @@ public class SampleFindGetisOrdGiStar {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Program program = Program.builder("local_spatial_auto_correlation")
+		Plan plan = RemotePlan.builder("local_spatial_auto_correlation")
 								.loadGetisOrdGi(INPUT, VALUE_COLUMN, 1000,
 												LISAWeight.FIXED_DISTANCE_BAND)
 								.project("UID,gi_zscore,gi_pvalue")
@@ -31,7 +32,7 @@ public class SampleFindGetisOrdGiStar {
 								.storeAsCsv(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 //		RecordSet rset = marmot.readLayer(RESULT);

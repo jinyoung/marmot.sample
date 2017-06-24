@@ -3,7 +3,8 @@ package geom.join;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -24,7 +25,7 @@ public class SampleLoadSpatialIndexJoin {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Program program = Program.builder("load_spatial_index_join")
+		Plan plan = RemotePlan.builder("load_spatial_index_join")
 								.loadSpatialIndexJoin(OUTER, INNER, SpatialRelation.INTERSECTS,
 														"left.*,right.{the_geom as the_geom2}")
 								.intersection("the_geom", "the_geom2", "the_geom", 1)
@@ -32,7 +33,7 @@ public class SampleLoadSpatialIndexJoin {
 								.storeMarmotFile(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);

@@ -9,7 +9,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
+import marmot.optor.JoinOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
@@ -41,7 +43,7 @@ public class Step1CardSales {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		Program program = Program.builder("card_sales")
+		Plan plan = RemotePlan.builder("card_sales")
 								// 전국 카드매출액 파일을 읽는다.
 								.load(CARD_SALES)
 								// 시간대 단위의 매출액은 모두 합쳐 하루 매출액을 계산한다. 
@@ -50,7 +52,8 @@ public class Step1CardSales {
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 								// 매출액 구역을 뽑는다.
 								.join("block_cd", BIZ_GRID, "block_cd",
-									"param.*,std_ym,daily_sales", opt->opt.workerCount(64))
+										"param.*,std_ym,daily_sales",
+										new JoinOptions().workerCount(64))
 								// 한 그리드 셀에 여러 소지역 매출액 정보가 존재하면,
 								// 해당 매출액은 모두 더한다. 
 								.groupBy("std_ym,cell_id")
@@ -60,7 +63,7 @@ public class Step1CardSales {
 								.store(RESULT)
 								.build();
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, program);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

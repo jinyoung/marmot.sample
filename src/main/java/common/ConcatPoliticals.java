@@ -3,7 +3,9 @@ package common;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
+import marmot.optor.JoinOptions;
 import marmot.optor.JoinType;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -45,30 +47,27 @@ public class ConcatPoliticals {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 
-		Program program;
-		program = Program.builder("merge_politicals")
+		Plan plan;
+		plan = RemotePlan.builder("merge_politicals")
 						.load(LI)
 						.update("emd_cd2:string", "emd_cd2 = li_cd.substring(0,8)")
 						.join("emd_cd2", EMD, "emd_cd",
 							"*, param.the_geom as emd_the_geom,param.*-{the_geom}",
-							opts->opts.joinType(JoinType.RIGHT_OUTER_JOIN).workerCount(1)
-						)
+							new JoinOptions().joinType(JoinType.RIGHT_OUTER_JOIN).workerCount(1))
 						.update("bjd_nm:string,bjd_cd:string",merge)
 						.project("the_geom,bjd_cd,bjd_nm,"
 								+ "emd_cd,emd_kor_nm as emd_nm,"
 								+ "li_cd,li_kor_nm as li_nm")
 						.update("sig_cd2:string", "sig_cd2 = bjd_cd.substring(0,5)")
 						.join("sig_cd2", SGG, "sig_cd", "*,param.sig_kor_nm",
-							opts->opts.workerCount(1)
-						)
+								new JoinOptions().workerCount(1))
 						.update(script1)
 						.project("the_geom,bjd_cd,bjd_nm,"
 								+ "sig_cd2 as sgg_cd,sig_kor_nm as sgg_nm,"
 								+ "emd_cd,emd_nm,li_cd,li_nm")
 						.update("sid_cd2:string", "sid_cd2 = bjd_cd.substring(0,2)")
 						.join("sid_cd2", SID, "ctprvn_cd", "*,param.{ctp_kor_nm,ctprvn_cd}",
-							opts->opts.workerCount(1)
-						)
+								new JoinOptions().workerCount(1))
 						.update("bjd_nm = ctp_kor_nm + ' ' + bjd_nm")
 						.project("the_geom,bjd_cd,bjd_nm,"
 								+ "ctprvn_cd as sid_cd,ctp_kor_nm as sid_nm,"
@@ -78,7 +77,7 @@ public class ConcatPoliticals {
 		
 		StopWatch watch = StopWatch.start();
 		marmot.deleteDataSet(POLITICAL);
-		DataSet result = marmot.createDataSet(POLITICAL, geomCol, srid, program);
+		DataSet result = marmot.createDataSet(POLITICAL, geomCol, srid, plan);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		result.cluster();

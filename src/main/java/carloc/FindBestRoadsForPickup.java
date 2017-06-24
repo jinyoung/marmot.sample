@@ -9,8 +9,9 @@ import java.nio.charset.Charset;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.Program;
+import marmot.Plan;
 import marmot.RecordSet;
+import marmot.RemotePlan;
 import marmot.optor.AggregateFunction;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -34,12 +35,12 @@ public class FindBestRoadsForPickup {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 		
-		Program program;
+		Plan plan;
 
-		Program rank = Program.builder()
-						.rank("count:D", "rank")
-						.build();
-		program = Program.builder("match_and_rank_roads")
+		Plan rank = RemotePlan.builder("rank")
+							.rank("count:D", "rank")
+							.build();
+		plan = RemotePlan.builder("match_and_rank_roads")
 						.load(TAXI_LOG)
 						.filter("status == 0")
 						.update("hour:int", "hour=ts.substring(8,10)")
@@ -55,7 +56,7 @@ public class FindBestRoadsForPickup {
 
 		StopWatch watch = StopWatch.start();
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
@@ -69,11 +70,11 @@ public class FindBestRoadsForPickup {
 	
 	private static void export(MarmotClient marmot, String resultLayerName, int hour,
 								String baseName) throws IOException {
-		Program program = Program.builder()
+		Plan plan = RemotePlan.builder("export")
 								.load(resultLayerName)
 								.filter("hour == " + hour)
 								.build();
-		RecordSet rset = marmot.executeSequentially(program);
+		RecordSet rset = marmot.executeLocally(plan);
 
 		String file = String.format("/home/kwlee/tmp/%s_%02d.shp", baseName, hour);
 		marmot.writeToShapefile(rset, new File(file), "best_roads", SRID,

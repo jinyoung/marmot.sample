@@ -11,7 +11,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -40,7 +41,7 @@ public class Step1Building {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		Program program = Program.builder("building_registry")
+		Plan plan = RemotePlan.builder("building_registry")
 								.load(BUILDINGS)
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여,
 								// 대도시 상업지역과 겹치는 유동인구 구역을 뽑는다. 
@@ -55,7 +56,7 @@ public class Step1Building {
 								.store(RESULT)
 								.build();
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, program);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
 		
 		SampleUtils.printPrefix(result, 10);
 	}

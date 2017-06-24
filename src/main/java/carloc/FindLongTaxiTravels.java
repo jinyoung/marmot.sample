@@ -4,7 +4,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -24,7 +25,7 @@ public class FindLongTaxiTravels {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect("localhost", 12985);
 
-		Program program = Program.builder("find_long_travels")
+		Plan plan = RemotePlan.builder("find_long_travels")
 								.load(TAXI_TRJ)
 								.filter("status == 3")
 								.update("length:double",
@@ -37,7 +38,7 @@ public class FindLongTaxiTravels {
 								.build();
 
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", SRID, program);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", SRID, plan);
 		
 		SampleUtils.printPrefix(result, 5);
 	}

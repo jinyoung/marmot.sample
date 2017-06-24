@@ -7,7 +7,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.geo.GeoClientUtils;
 import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
@@ -33,14 +34,14 @@ public class SampleIndexedRangeQuery {
 		Envelope bounds = GeoClientUtils.expandBy(info.getBounds(), -10000);
 		Geometry key = GeoClientUtils.toPolygon(bounds);
 		
-		Program program = Program.builder()
+		Plan plan = RemotePlan.builder("sample_indexed_rangequery")
 								.load(BUILDINGS, SpatialRelation.INTERSECTS, key)
 								.project("the_geom,시군구코드,건물명")
 								.store(RESULT)
 								.build();
 
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", program);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 50);

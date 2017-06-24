@@ -8,7 +8,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -40,9 +41,9 @@ public class Step0 {
 						+ "old = $age >= 20 ? 1 : 0;"
 						+ "be5 = $age >= 5 ? 1 : 0;";
 		
-		Program program = Program.builder("find_old_buildings")
+		Plan plan = RemotePlan.builder("find_old_buildings")
 								.load(BUILDINGS)
-								.update(schema, trans, opts->opts.initializeScript(init))
+								.update(schema, init, trans)
 								.spatialJoin("the_geom", EMD, INTERSECTS,
 											"the_geom,원천도형ID,old,be5,"
 											+ "param.{emd_cd,emd_kor_nm as emd_nm}")
@@ -53,7 +54,7 @@ public class Step0 {
 								.storeMarmotFile(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);
-		marmot.execute(program);
+		marmot.execute(plan);
 		
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}

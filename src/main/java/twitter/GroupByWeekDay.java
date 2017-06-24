@@ -2,7 +2,8 @@ package twitter;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
@@ -25,15 +26,15 @@ public class GroupByWeekDay {
 
 		marmot.deleteFile(RESULT);
 
-		Program program = Program.builder("group_by_weekday_and_count")
+		Plan plan = RemotePlan.builder("group_by_weekday_and_count")
 								.load(TWEETS)
 								.project("id,created_at")
-								.transform("week_day:int", "week_day = ST_DTWeekDay(created_at)")
+								.update("week_day:int", "week_day = ST_DTWeekDay(created_at)")
 								.groupBy("week_day").count()
 								.skip(0)
 								.storeAsCsv(RESULT)
 								.build();
-		marmot.execute(program);
+		marmot.execute(plan);
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());

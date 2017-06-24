@@ -8,7 +8,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Program;
+import marmot.Plan;
+import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -38,7 +39,7 @@ public class FindByDateTime {
 		String betweenDTPred = "ST_DTIsBetween(created_at,$begin,$end)";
 		
 		// 질의 처리를 위한 질의 프로그램 생성
-		Program program = Program.builder("find_by_datetime")
+		Plan plan = RemotePlan.builder("find_by_datetime")
 								// 'INPUT' 디렉토리에 저장된 Tweet 로그 파일들을 읽는다.
 								.load(TWEETS)
 								// 2015.12.30 부터  2016.01.2 이전까지 레코드만을 뽑아서
@@ -50,7 +51,7 @@ public class FindByDateTime {
 								.build();
 		
 		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", program);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan);
 		
 		SampleUtils.printPrefix(result, 10);
 	}
