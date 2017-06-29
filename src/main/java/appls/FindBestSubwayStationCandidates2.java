@@ -71,26 +71,24 @@ public class FindBestSubwayStationCandidates2 {
 					.load(TAXI_LOG)
 					// 승차/하차 로그만 선택한다.
 					.filter("status==1 || status==2")
-					// 서울영역만의 로그만 선택한다.
+					// 서울특별시 영역만의 로그만 선택한다.
 					.intersects(taxi.getGeometryColumn(), seoul)
-					// 포함된 사각 셀을  부가한다.
+					// 1km 지하철 역사 버퍼와 겹치는 영역을 제거한다.
+					.differenceJoin("the_geom", TEMP_STATIONS)
+					// 각 로그 위치가 포함된 사각 셀을  부가한다.
 					.assignSquareGridCell(geomCol, bounds, new DimensionDouble(500, 500))
 					.project("cell_geom as the_geom, cell_id, cell_pos")
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
 					.groupBy("cell_id")
 						.taggedKeyColumns("the_geom,cell_pos")
 						.aggregate(COUNT())
-					// 1km 지하철 역사 버버와 겹치는 영역을 제거한다.
-					.differenceJoin("the_geom", TEMP_STATIONS)
-					// 일부 겹친 경우, 남은 영역이 90000보다 작은 경우는 제외시킨다.
-					.filter("ST_Area(the_geom) > 120000")
 					// 'count' 컬럼 값을 기준으로 최대 10개의 그리드셀만을 선택한다.
-					.sort("count:D")
+					.pickTopK("count:D", 10)
 					.project("the_geom,cell_pos,cell_id,count")
 					.store(RESULT)
 					.build();
 		marmot.deleteDataSet(RESULT);
-		result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan);
+		result = marmot.createDataSet(RESULT, "the_geom", srid, plan);
 		
 		marmot.deleteDataSet(TEMP_STATIONS);
 		

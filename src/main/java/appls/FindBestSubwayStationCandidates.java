@@ -42,31 +42,14 @@ public class FindBestSubwayStationCandidates {
 		
 		DataSet input = marmot.getDataSet(SID);
 		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
 		plan = marmot.planBuilder("get_seoul")
 					.load(SID)
 					.filter("ctprvn_cd == '11'")
 					.build();
-		Geometry seoul = marmot.executeLocally(plan)
-								.toList()
-								.get(0)
-								.getGeometry(geomCol);
+		Geometry seoul = marmot.executeLocally(plan).toList().get(0).getGeometry(geomCol);
 		Envelope bounds = seoul.getEnvelopeInternal();
-		
-		// 택시 운행 로그 기록에서 서울시 영역에서 승하차 로그 데이터만 추출한다.
-		DataSet taxi = marmot.getDataSet(TAXI_LOG);
-		String taxiGeomCol = taxi.getGeometryColumn();
-		plan = marmot.planBuilder("seoul_taxi")
-					.load(TAXI_LOG)
-					.filter("status==1 || status==2")
-					.intersects(taxiGeomCol, seoul)
-					.store(TEMP_SEOUL_TAXI)
-					.build();
-		marmot.deleteDataSet(TEMP_SEOUL_TAXI);
-		result = marmot.createDataSet(TEMP_SEOUL_TAXI, taxiGeomCol, taxi.getSRID(), plan);
-		result.cluster();
 
 		// 서울지역 지하철 역사를 구하고 1km 버퍼를 구한다.
 		DataSet stations = marmot.getDataSet(STATIONS);
@@ -80,21 +63,37 @@ public class FindBestSubwayStationCandidates {
 		marmot.deleteDataSet(TEMP_STATIONS);
 		result = marmot.createDataSet(TEMP_STATIONS, statGeomCol, stations.getSRID(), plan);
 		
-		// 서울특별시를 커버하는 500mx500m 사각 그리드를 생성한다.
+		// 택시 운행 로그 기록에서 서울시 영역에서 지하철 역사에서 1km 떨어진 승하차 로그 데이터만 추출한다.
+		DataSet taxi = marmot.getDataSet(TAXI_LOG);
+		String taxiGeomCol = taxi.getGeometryColumn();
+		plan = marmot.planBuilder("seoul_taxi")
+					.load(TAXI_LOG)
+					// 승하차 로그 데이터만 추출한다.
+					.filter("status==1 || status==2")
+					// 서울시 영역만 추출한다.
+					.intersects(taxiGeomCol, seoul)
+					// 지하철 역사에서 1km 떨어진 영역만 추출한다.
+					.differenceJoin("the_geom", TEMP_STATIONS)
+					.store(TEMP_SEOUL_TAXI)
+					.build();
+		marmot.deleteDataSet(TEMP_SEOUL_TAXI);
+		result = marmot.createDataSet(TEMP_SEOUL_TAXI, taxiGeomCol, taxi.getSRID(), plan);
+		result.cluster();
+		
+		// 서울특별시를 커버하는 500mx500m 사각 그리드를 생성하고, 각 셀에 포함된
+		// 승하차 지점의 갯수를 센다.
 		plan = marmot.planBuilder("grid_seould_500x500")
 					.loadSquareGridFile(bounds, new DimensionDouble(500, 500))
-					.intersects("the_geom", seoul)
-					.differenceJoin("the_geom", TEMP_STATIONS)
-					.filter("ST_Area(the_geom) > 120000")
 					.aggregateJoin("the_geom", TEMP_SEOUL_TAXI, INTERSECTS, COUNT())
-					.sort("count:D")
+					// 'count' 컬럼 값을 기준으로 최대 10개의 그리드셀만을 선택한다.
+					.pickTopK("count:D", 10)
 					.store(RESULT)
 					.build();
 		marmot.deleteDataSet(RESULT);
 		result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan);
 		
-//		marmot.deleteDataSet(TEMP_STATIONS);
-//		marmot.deleteDataSet(TEMP_SEOUL_TAXI);
+		marmot.deleteDataSet(TEMP_STATIONS);
+		marmot.deleteDataSet(TEMP_SEOUL_TAXI);
 		
 		System.out.println("elapsed: " + watch.stopAndGetElpasedTimeString());
 		
