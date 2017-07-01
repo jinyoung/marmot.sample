@@ -28,7 +28,7 @@ public class SampleConvexHull {
 
 		Plan plan = marmot.planBuilder("convex_hull")
 								.load(INPUT)
-								.aggregate(ConvexHull("the_geom"))
+								.aggregate(ConvexHull("the_geom").as("the_geom"))
 								.store(RESULT)
 								.build();
 

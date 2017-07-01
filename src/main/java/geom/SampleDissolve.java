@@ -17,7 +17,7 @@ import marmot.remote.robj.MarmotClient;
 public class SampleDissolve {
 	private static final String RESULT = "tmp/sample/result";
 	private static final String INPUT = "교통/지하철/서울역사";
-	private static final int NPARTS = 151;
+	private static final int NPARTS = 11;
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
