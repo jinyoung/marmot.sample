@@ -10,7 +10,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
