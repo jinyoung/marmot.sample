@@ -12,6 +12,9 @@ import marmot.Plan;
 import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
+import utils.CommandLine;
+import utils.CommandLineParser;
+import utils.StopWatch;
 
 /**
  * 본 클래스는 트위트 레이어를 읽어서, 2015.12.30 부터  2016.01.2이전까지의 트윗을
@@ -28,9 +31,23 @@ public class FindByDateTime {
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
+		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
+		
+		CommandLine cl = parser.parseArgs(args);
+		if ( cl.hasOption("help") ) {
+			cl.exitWithUsage(0);
+		}
+
+		String host = cl.getOptionValue("host", "localhost");
+		int port = cl.getOptionInt("port", 12985);
+		
+		StopWatch watch = StopWatch.start();
+		
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect("localhost", 12985);
+		MarmotClient marmot = connector.connect(host, port);
 
 		// 2015.12.25 부터  2015.12.26 이전까지 tweets을 검색하기 위한 조건 문자열 생성
 		String initPred = String.format("$begin=ST_DTFromString('%s'); "
