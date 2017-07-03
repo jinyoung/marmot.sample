@@ -5,8 +5,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
-import marmot.optor.MapReduceOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -29,7 +27,7 @@ public class SampleDissolve {
 		Plan plan = marmot.planBuilder("dissolve")
 								.load(INPUT)
 								.project("the_geom,sig_cd")
-								.dissolve("sig_cd", new MapReduceOptions<>().workerCount(NPARTS))
+								.dissolve("sig_cd", NPARTS)
 								.store(RESULT)
 								.build();
 
