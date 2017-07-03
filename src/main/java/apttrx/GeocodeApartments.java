@@ -40,7 +40,7 @@ public class GeocodeApartments {
 						// partition으로 나눠서 수행하도록한다.
 						// 이렇게 되면 다음에 수행되는 지오코딩이 각 partition별로
 						// 수행되기 때문에 높은 병렬성을 갖게된다.
-						.distinct("addr", new MapReduceOptions<>().workerCount(29))
+						.distinct("addr", 29)
 						// 지오코딩을 통해 아파트 좌표 계산
 						.lookupPostalAddress("addr", "info")
 						.update("the_geom:multi_polygon", "the_geom = info.?geometry")

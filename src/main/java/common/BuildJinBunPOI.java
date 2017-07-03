@@ -6,9 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.optor.JoinOptions;
-import marmot.optor.MapReduceOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.StopWatch;
@@ -37,7 +35,7 @@ public class BuildJinBunPOI {
 		String tempDs = "tmp/" + UUID.randomUUID().toString();
 		plan = marmot.planBuilder("distinct_jibun")
 						.load(JIBUN)
-						.distinct("건물관리번호", new MapReduceOptions<>().workerCount(11)) 
+						.distinct("건물관리번호", 11) 
 						.store(tempDs)
 						.build();
 		result = marmot.createDataSet(tempDs, plan);
@@ -56,7 +54,7 @@ public class BuildJinBunPOI {
 									new JoinOptions().workerCount(23))
 							.join("건물관리번호", tempDs, "건물관리번호",
 									"*,param.{법정동코드,지번본번,지번부번,산여부}", null)
-							.distinct("건물관리번호,법정동코드,지번본번,지번부번,산여부", null)
+							.distinct("건물관리번호,법정동코드,지번본번,지번부번,산여부")
 							.store(RESULT)
 							.build();
 			

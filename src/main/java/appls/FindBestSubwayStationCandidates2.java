@@ -67,7 +67,7 @@ public class FindBestSubwayStationCandidates2 {
 		String srid = taxi.getSRID();
 		
 		// 택시 운행 로그 기록에서 성울시 영역부분에서 승하차 로그 데이터만 추출한다.
-		plan = marmot.planBuilder("find_best_spots")
+		plan = marmot.planBuilder("find_subway_candiates")
 					.load(TAXI_LOG)
 					// 승차/하차 로그만 선택한다.
 					.filter("status==1 || status==2")

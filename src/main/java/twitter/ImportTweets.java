@@ -5,7 +5,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 
@@ -33,7 +32,7 @@ public class ImportTweets {
 								// 'the_geom' 컬럼에 저장시킨다.
 								.transformCRS("the_geom", "EPSG:4326", "the_geom", SRID)
 								// 중복된 id의 tweet를 제거시킨다.
-								.distinct("id", null)
+								.distinct("id")
 								// 'OUTPUT_LAYER'에 해당하는 레이어로 저장시킨다.
 								.store(OUTPUT_DATASET)
 								.build();
