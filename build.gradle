@@ -23,8 +23,9 @@ repositories {
 }
 
 dependencies {
-	compile 'etri:marmot.client:1.1'
+//	compile 'etri:marmot.client:1.1'
 //	compile project(':marmot.client')
+	compile files('lib/marmot.client-1.1-all.jar')
 }
 
 task sourceJar(type: Jar) {
