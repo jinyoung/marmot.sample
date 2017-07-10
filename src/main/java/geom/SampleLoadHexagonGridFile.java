@@ -9,7 +9,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -53,10 +52,10 @@ public class SampleLoadHexagonGridFile {
 		bounds.expandBy(2*SIDE_LEN, SIDE_LEN);
 
 		Plan plan = marmot.planBuilder("load_hexagon_grid")
-								.loadHexagonGridFile(srid, bounds, SIDE_LEN, 8)
-								.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
-								.store(RESULT)
-								.build();
+							.loadHexagonGridFile(bounds, srid, SIDE_LEN, 8)
+							.spatialSemiJoin("the_geom", INPUT, INTERSECTS, false)
+							.store(RESULT)
+							.build();
 
 		marmot.deleteDataSet(RESULT);
 		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);

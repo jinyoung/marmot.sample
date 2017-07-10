@@ -1,16 +1,15 @@
 package geom.join;
 
+import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.Plan;
-import marmot.RemotePlan;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.StopWatch;
 
 /**
  * 
@@ -36,19 +35,15 @@ public class SampleSpatialSemiJoinDistance {
 		String host = cl.getOptionValue("host", "localhost");
 		int port = cl.getOptionInt("port", 12985);
 		
-		StopWatch watch = StopWatch.start();
-		
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
 		Plan plan = marmot.planBuilder("within_distance")
 								.load(INPUT)
-								.spatialSemiJoin("the_geom", PARAMS,
-												SpatialRelation.WITHIN_DISTANCE(30))
+								.spatialSemiJoin("the_geom", PARAMS, WITHIN_DISTANCE(30), false)
 								.storeMarmotFile(RESULT)
 								.build();
-
 		marmot.deleteFile(RESULT);
 		marmot.execute(plan);
 		

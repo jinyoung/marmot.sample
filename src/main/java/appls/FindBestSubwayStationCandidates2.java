@@ -1,6 +1,7 @@
 package appls;
 
 import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -27,6 +28,7 @@ public class FindBestSubwayStationCandidates2 {
 	private static final String STATIONS = "교통/지하철/역사";
 	private static final String TEMP_STATIONS = "tmp/station_buffer";
 	private static final String RESULT = "tmp/result";
+	private static final DimensionDouble CELL_SIZE = new DimensionDouble(500, 500);
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -87,10 +89,10 @@ public class FindBestSubwayStationCandidates2 {
 					.filter("status==1 || status==2")
 					// 서울특별시 영역만의 로그만 선택한다.
 					.intersects(taxi.getGeometryColumn(), seoul)
-					// 1km 지하철 역사 버퍼와 겹치는 영역을 제거한다.
-					.differenceJoin("the_geom", TEMP_STATIONS)
+					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
+					.spatialSemiJoin("the_geom", TEMP_STATIONS, INTERSECTS, true)
 					// 각 로그 위치가 포함된 사각 셀을  부가한다.
-					.assignSquareGridCell(geomCol, bounds, new DimensionDouble(500, 500))
+					.assignSquareGridCell(geomCol, bounds, CELL_SIZE)
 					.project("cell_geom as the_geom, cell_id, cell_pos")
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
 					.groupBy("cell_id")
@@ -105,7 +107,6 @@ public class FindBestSubwayStationCandidates2 {
 		result = marmot.createDataSet(RESULT, "the_geom", srid, plan);
 		
 		marmot.deleteDataSet(TEMP_STATIONS);
-		
 		System.out.println("elapsed: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

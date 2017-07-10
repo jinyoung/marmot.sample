@@ -52,7 +52,7 @@ public class SampleLoadSquareGridFile {
 
 		Plan plan = marmot.planBuilder("sample_load_squaregrid")
 								.loadSquareGridFile(INPUT, dim)
-								.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
+								.spatialSemiJoin("the_geom", INPUT, INTERSECTS, false)
 								.store(RESULT)
 								.build();
 

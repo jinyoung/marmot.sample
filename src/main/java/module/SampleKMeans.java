@@ -1,17 +1,18 @@
 package module;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Point;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
-import marmot.process.geo.ClusterWithKMeansParameters;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -25,6 +26,7 @@ import utils.StopWatch;
 public class SampleKMeans {
 	private static final String SGG = "구역/시군구";
 	private static final String INPUT = "토지/용도지역지구";
+	private static final String TEMP = "tmp/centers";
 	private static final String OUTPUT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -48,14 +50,14 @@ public class SampleKMeans {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
-		ClusterWithKMeansParameters params = new ClusterWithKMeansParameters();
-		params.layerName(INPUT);
-		params.outputLayerName(OUTPUT);
-		params.dataColumn("the_geom");
-		params.clusterColumn("group");
-		params.initialCentroids(getInitCentroids(marmot, 9, 0.025));
-		params.terminationDistance(100);
-		params.terminationIterations(30);
+		Map<String,Object> params = Maps.newHashMap();
+		params.put("dataset.input", INPUT);
+		params.put("dataset.output", OUTPUT);
+		params.put("feature_columns", Lists.newArrayList("center"));
+		params.put("cluster_column", "cluster_id");
+		params.put("initial_centroids", getInitCentroids(marmot, 9, 0.025));
+		params.put("termination.distance", 100);
+		params.put("termination.iteration", 30);
 		
 		marmot.deleteDataSet(OUTPUT);
 		marmot.executeProcess("kmeans", params);

@@ -1,5 +1,8 @@
 package carloc;
 
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -8,9 +11,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.geo.GeoClientUtils;
-import marmot.optor.geo.HistogramCounter;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.DimensionDouble;
@@ -23,7 +24,6 @@ public class CalcHeatMap {
 	private static final String TAXI_LOG = "로그/나비콜";
 	private static final String SEOUL = "시연/서울특별시";
 	private static final String RESULT = "tmp/result";
-	private static final String SRID = "EPSG:5186";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -42,8 +42,7 @@ public class CalcHeatMap {
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")
 								.loadSquareGridFile(envl, cellSize)
-								.buildSpatialHistogram("the_geom", TAXI_LOG,
-													HistogramCounter.COUNT, null, "count")
+								.aggregateJoin("the_geom", TAXI_LOG, INTERSECTS, COUNT())
 								.store(RESULT)
 								.build();
 

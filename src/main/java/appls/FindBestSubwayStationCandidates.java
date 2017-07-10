@@ -87,7 +87,7 @@ public class FindBestSubwayStationCandidates {
 					// 서울시 영역만 추출한다.
 					.intersects(taxiGeomCol, seoul)
 					// 지하철 역사에서 1km 떨어진 영역만 추출한다.
-					.differenceJoin("the_geom", TEMP_STATIONS)
+					.spatialSemiJoin("the_geom", TEMP_STATIONS, INTERSECTS, true)
 					.store(TEMP_SEOUL_TAXI)
 					.build();
 		marmot.deleteDataSet(TEMP_SEOUL_TAXI);

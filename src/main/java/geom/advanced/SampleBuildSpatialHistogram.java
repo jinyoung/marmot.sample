@@ -1,15 +1,17 @@
 package geom.advanced;
 
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+
+import java.util.List;
+
 import org.apache.log4j.PropertyConfigurator;
 
+import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
-import marmot.optor.geo.HistogramCounter;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -52,15 +54,15 @@ public class SampleBuildSpatialHistogram {
 		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 30,
 														envl.getHeight() / 30);
 		
+		List<String> valueCols = Lists.newArrayList("휘발유", "경유");
 		Plan plan = marmot.planBuilder("build_spatial_histogram")
 								// 서울특별시 구역을 기준으로 사각 그리드를 생성함.
 								.loadSquareGridFile(BORDER, cellSize)
 								// 사각 그리드 셀 중에서 서울특별시 영역만 필터링.
-								.spatialSemiJoin("the_geom", BORDER, SpatialRelation.INTERSECTS)
+								.spatialSemiJoin("the_geom", BORDER, INTERSECTS, false)
 								// 사각 그리드 셀 중에서 주유소와 겹치는 셀만 필터링.
 //								.spatialSemiJoin("the_geom", STATIONS, SpatialRelation.INTERSECTS)
-								.buildSpatialHistogram("the_geom", STATIONS,
-													HistogramCounter.COUNT, null, "count")
+								.buildSpatialHistogram("the_geom", STATIONS, valueCols)
 								.update("cell_pos:string,count:int",
 										"cell_pos = cell_pos.toString(); count=count;")
 								.store(RESULT)
