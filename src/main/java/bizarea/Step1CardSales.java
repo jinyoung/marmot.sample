@@ -23,7 +23,7 @@ import utils.StopWatch;
  */
 public class Step1CardSales {
 	private static final String BIZ_GRID = "tmp/bizarea/grid100";
-	private static final String CARD_SALES = "국민/카드매출/시간대/2015";
+	private static final String CARD_SALES = "주민/카드매출/시간대/2015";
 	private static final String RESULT = "tmp/bizarea/grid100_sales";
 	
 	public static final void main(String... args) throws Exception {

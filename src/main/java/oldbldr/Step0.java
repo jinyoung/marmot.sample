@@ -9,7 +9,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -23,7 +22,7 @@ import utils.StopWatch;
 public class Step0 {
 	private static final String BUILDINGS = "건물/통합정보";
 	private static final String EMD = "구역/읍면동";
-	private static final String RESULT = "tmp/old_ages";
+	private static final String RESULT = "tmp/building_age";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -46,8 +45,9 @@ public class Step0 {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
-		DataSet info = marmot.getDataSet(BUILDINGS);
-		String geomCol = info.getGeometryColumn();
+		DataSet emd = marmot.getDataSet(EMD);
+		String geomCol = emd.getGeometryColumn();
+		String srid = emd.getSRID();
 		
 		String schema = "old:byte,be5:byte";
 		String init = "$now = ST_DateNow();";
@@ -62,17 +62,20 @@ public class Step0 {
 								.load(BUILDINGS)
 								.update(schema, init, trans)
 								.spatialJoin("the_geom", EMD, INTERSECTS,
-											"the_geom,원천도형ID,old,be5,"
-											+ "param.{emd_cd,emd_kor_nm as emd_nm}")
+											"원천도형ID,old,be5,"
+											+ "param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 								.groupBy("emd_cd")
 									.taggedKeyColumns(geomCol + ",emd_nm")
 									.aggregate(SUM("old").as("old_cnt"),
-												SUM("be5").as("be5_cnt"), COUNT())
-								.storeMarmotFile(RESULT)
+												SUM("be5").as("be5_cnt"),
+												COUNT().as("bld_cnt"))
+								.update("old_ratio:double",
+										"old_ratio = (double)old_cnt/bld_cnt")
+								.store(RESULT)
 								.build();
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		marmot.deleteDataSet(RESULT);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
 		
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
+		SampleUtils.printPrefix(result, 10);
 	}
 }

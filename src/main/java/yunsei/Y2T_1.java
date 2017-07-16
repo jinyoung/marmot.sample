@@ -18,6 +18,7 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.process.geo.FeatureVector;
 import marmot.process.geo.FeatureVectorHandle;
+import marmot.process.geo.KMeansParameters;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -29,7 +30,7 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class Y2T_1 {
-	private static final String BUS_OT_DT = "연세대제공/서울버스_승하차";
+	private static final String BUS_OT_DT = "연세대/서울버스_승하차";
 	private static final String SID = "구역/시도";
 	private static final String COLLECT = "구역/집계구";
 	private static final String TEMP_BUS_SEOUL = "tmp/bus_seoul";
@@ -92,7 +93,7 @@ public class Y2T_1 {
 		Geometry seoul = marmot.executeLocally(plan).toList().get(0).getGeometry(geomCol);
 
 		// 버스 승하차 정보에서 서울 구역부분만 추출한다.
-		plan = marmot.planBuilder("crop")
+		plan = marmot.planBuilder("버스 승하차에서 서울부분 추출")
 					.load(BUS_OT_DT)
 					// 서울시 영역만 추출한다.
 					.intersects(geomCol, seoul)
@@ -103,9 +104,9 @@ public class Y2T_1 {
 		System.out.println("done: crop bus_ot_dt with seoul");
 		
 		DataSet multiRings = doMultiRing(marmot, result, seoul, MULTI_RINGS);
-		System.out.println("done: ring_buffer");
+		System.out.println("done: ring_buffer, elapsed=" + watch.getElapsedTimeString());
 		multiRings.cluster();
-		System.out.println("done: indexing ring_buffer");
+		System.out.println("done: cluster ring_buffer, elapsed=" + watch.getElapsedTimeString());
 		marmot.deleteDataSet(TEMP_BUS_SEOUL);
 
 		List<String> valueColNames = IntStream.rangeClosed(1, 25)
@@ -116,7 +117,7 @@ public class Y2T_1 {
 												return Stream.of(ot, dt);
 											})
 											.collect(Collectors.toList());
-		plan = marmot.planBuilder("build_otdt_histogram")
+		plan = marmot.planBuilder("승하차 히스트그램 생성")
 					.load(COLLECT)
 					// 서울시 영역만 추출한다.
 					.filter("행정코드.startsWith('11')")
@@ -126,7 +127,7 @@ public class Y2T_1 {
 		marmot.deleteDataSet(TEMP_HISTOGRAM);
 		result = marmot.createDataSet(TEMP_HISTOGRAM, geomCol, srid, plan);
 		marmot.deleteDataSet(MULTI_RINGS);
-		System.out.println("done: build_histogram");
+		System.out.println("done: build_histogram, elapsed=" + watch.getElapsedTimeString());
 		
 		kmeans(marmot, TEMP_HISTOGRAM, RESULT);
 		marmot.deleteDataSet(TEMP_HISTOGRAM);
@@ -142,17 +143,17 @@ public class Y2T_1 {
 		List<FeatureVector> centroids = handle.sampleInitialCentroids(marmot,
 															TEMP_HISTOGRAM, 0.001, 6);
 		
-		Map<String,Object> params = Maps.newHashMap();
-		params.put("dataset.input", input);
-		params.put("dataset.output", output);
-		params.put("feature_columns", FEATURE_COLNAMES);
-		params.put("cluster_column", "cluster_id");
-		params.put("initial_centroids", centroids);
-		params.put("termination.distance", 50);
-		params.put("termination.iteration", 30);
+		KMeansParameters params = new KMeansParameters();
+		params.inputDataset(input);
+		params.outputDataset(output);
+		params.featureColumns(FEATURE_COLNAMES);
+		params.clusterColumn("cluster_id");
+		params.initialCentroids(centroids);
+		params.terminationDistance(50);
+		params.terminationIteration(30);
 		
 		marmot.deleteDataSet(output);
-		marmot.executeProcess("kmeans", params);
+		marmot.executeProcess("kmeans", params.toMap());
 	}
 	
 	private static DataSet doMultiRing(MarmotClient marmot, DataSet bus, Geometry range,
@@ -179,7 +180,8 @@ public class Y2T_1 {
 			}
 			String expr2 = builder.toString();	
 			
-			Plan plan = marmot.planBuilder("spread")
+			StopWatch watch = StopWatch.start();
+			Plan plan = marmot.planBuilder("버스_승하차수_링버퍼_배분_반경_" + radius)
 							.load(bus.getId())
 							.buffer(geomCol, geomCol, radius)
 							.update("area:double",expr1)
@@ -197,7 +199,8 @@ public class Y2T_1 {
 				marmot.execute(plan);
 			}
 			
-			System.out.printf("done: buffer (ratius=%dm)%n", radius);
+			System.out.printf("done: buffer (ratius=%dm, elapsed=%s)%n",
+								radius, watch.stopAndGetElpasedTimeString());
 		}
 		
 		return multiRings;

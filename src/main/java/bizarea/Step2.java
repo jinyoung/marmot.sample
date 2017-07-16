@@ -7,7 +7,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.optor.JoinOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -23,7 +22,7 @@ public class Step2 {
 	private static final String BIZ_GRID_SALES = "tmp/bizarea/grid100_sales";
 	private static final String BIZ_GRID_FLOW_POP = "tmp/bizarea/grid100_pop";
 	private static final String POLITICAL = "구역/통합법정동";
-	private static final String RESULT = "tmp/biz/grid100_sales_pop";
+	private static final String RESULT = "tmp/bizarea/grid100_result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -73,6 +72,7 @@ public class Step2 {
 								.build();
 		marmot.deleteDataSet(RESULT);
 		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
+		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);
 	}

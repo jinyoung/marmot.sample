@@ -26,9 +26,10 @@ import utils.StopWatch;
 public class Step0 {
 	private static final String LAND_USAGE = "토지/용도지역지구";
 	private static final String POLITICAL = "구역/통합법정동";
+	private static final String BLOCK_CENTERS = "구역/지오비전_집계구_Point";
+	private static final String CADASTRAL = "구역/연속지적도";
 	private static final String TEMP_BIG_CITIES = "tmp/bizarea/big_cities";
 	private static final String TEMP_BIZ_AREA = "tmp/bizarea/area";
-	private static final String BLOCK_CENTERS = "tmp/bizarea/centers";
 	private static final String BIZ_GRID = "tmp/bizarea/grid100";
 	
 	public static final void main(String... args) throws Exception {
@@ -54,13 +55,21 @@ public class Step0 {
 		
 		DataSet result;
 		
-		//  행정경계에서 대도시 영역을 추출한다.
+		//  연속지적도에서 대도시 영역을 추출한다.
 		result = filterBigCities(marmot, TEMP_BIG_CITIES);
+		System.out.println("대도시 영역 추출 완료, elapsed=" + watch.getElapsedTimeString());
 		
 		// 용도지구에서 상업지역 추출
 		result = filterBizArea(marmot, TEMP_BIZ_AREA);
+		System.out.println("용도지구에서 상업지역 추출 완료, elapsed=" + watch.getElapsedTimeString());
 
-		DataSet info = marmot.getDataSet(LAND_USAGE);
+		String listExpr = Arrays.asList("일반상업지역","유통상업지역","근린상업지역",
+										"중심상업지역")
+								.stream()
+								.map(str -> "'" + str + "'")
+								.collect(Collectors.joining(",", "[", "]"));
+
+		DataSet info = marmot.getDataSet(CADASTRAL);
 		String srid = info.getSRID();
 		Envelope bounds = info.getBounds();
 		DimensionDouble cellSize = new DimensionDouble(100, 100);
@@ -84,21 +93,27 @@ public class Step0 {
 		
 		marmot.deleteDataSet(TEMP_BIG_CITIES);
 		marmot.deleteDataSet(TEMP_BIZ_AREA);
+		System.out.printf("상업지구 그리드 셀 구성 완료, elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 10);
+		SampleUtils.printPrefix(result, 5);
 	}
-
-	private static final DataSet filterBigCities(MarmotClient marmot, String result) {
-		String listExpr1 = Arrays.asList("11","26","27", "28", "29", "30", "31")
-								.stream()
-								.map(str -> "'" + str + "'")
-								.collect(Collectors.joining(",", "[", "]"));
-		String listExpr2 = Arrays.asList("41115","41111","41117", "41113", "48125", "48123",
+	
+	private static final String SIDO_EXPR;
+	private static final String SGG_EXPR;
+	static {
+		SIDO_EXPR = Arrays.asList("11","26","27", "28", "29", "30", "31")
+							.stream()
+							.map(str -> "'" + str + "'")
+							.collect(Collectors.joining(",", "[", "]"));
+		SGG_EXPR = Arrays.asList("41115","41111","41117", "41113", "48125", "48123",
 								"48127", "48121", "48129", "41281", "41285", "41287")
 								.stream()
 								.map(str -> "'" + str + "'")
 								.collect(Collectors.joining(",", "[", "]"));
-		String initExpr = String.format("$sid_cd=%s; $sgg_cd=%s", listExpr1, listExpr2);
+	}
+
+	private static final DataSet filterBigCities(MarmotClient marmot, String result) {
+		String initExpr = String.format("$sid_cd=%s; $sgg_cd=%s", SIDO_EXPR, SGG_EXPR);
 
 		DataSet political = marmot.getDataSet(POLITICAL);
 		String geomCol = political.getGeometryColumn();
@@ -111,6 +126,27 @@ public class Step0 {
 										+ "sgg_cd = bjd_cd.substring(0,5);")
 								.filter(initExpr,
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
+								.store(result)
+								.build();
+		marmot.deleteDataSet(result);
+		return marmot.createDataSet(result, geomCol, srid, plan);
+	}
+
+	private static final DataSet filterBigCities2(MarmotClient marmot, String result) {
+		String initExpr = String.format("$sid_cd=%s; $sgg_cd=%s", SIDO_EXPR, SGG_EXPR);
+
+		DataSet political = marmot.getDataSet(CADASTRAL);
+		String geomCol = political.getGeometryColumn();
+		String srid = political.getSRID();
+		
+		Plan plan = marmot.planBuilder("filter_big_cities")
+								.load(CADASTRAL)
+								.update("sid_cd:string,sgg_cd:string",
+										"sid_cd = pnu.substring(0,2);"
+										+ "sgg_cd = pnu.substring(0,5);")
+								.filter(initExpr,
+										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
+								.project("the_geom,pnu")
 								.store(result)
 								.build();
 		marmot.deleteDataSet(result);
@@ -132,7 +168,7 @@ public class Step0 {
 
 		Plan plan = marmot.planBuilder("filter_biz_area")
 								.load(LAND_USAGE)
-								.filter(initExpr, "$types.contains(dgm_nm)")
+								.filter(initExpr, "$types.contains('고유번호')")
 								.project("the_geom")
 								.store(TEMP_BIZ_AREA)
 								.build();

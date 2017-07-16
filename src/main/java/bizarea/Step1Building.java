@@ -12,7 +12,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RemotePlan;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -61,7 +60,7 @@ public class Step1Building {
 		Plan plan = marmot.planBuilder("building_registry")
 								.load(BUILDINGS)
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여,
-								// 대도시 상업지역과 겹치는 유동인구 구역을 뽑는다. 
+								// 대도시 상업지역과 겹치는 건축물 구역을 뽑는다. 
 								.spatialJoin("the_geom", BIZ_GRID, INTERSECTS,
 											"건축물용도코드,대지면적,param.*")
 								// 그리드 셀, 건축물 용도별로 건물 수와 총 면점을 집계한다. 
@@ -74,6 +73,7 @@ public class Step1Building {
 								.build();
 		marmot.deleteDataSet(RESULT);
 		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
+		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);
 	}

@@ -22,12 +22,10 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SummarizeByHighSchool2 {
+public class SummarizeByHighSchoolLong {
 	private static final String APT_TRX = "주택/실거래/아파트매매";
-	private static final String APT_LOC = "tmp/아파트실매매/아파트위치";
 	private static final String SCHOOLS = "POI/전국초중등학교";
 	private static final String HIGH_SCHOOLS = "tmp/아파트실매매/고등학교";
-//	private static final String RESULT = "tmp/아파트실매매/고등학교주변";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {

@@ -25,7 +25,7 @@ import utils.StopWatch;
  */
 public class FindBestRoadsForPickup {
 	private static final String TAXI_LOG = "로그/나비콜/택시로그";
-	private static final String ROADS = "교통/도로망/링크";
+	private static final String ROADS = "교통/도로/링크";
 	private static final String RESULT = "tmp/result";
 	private static final String SRID = "EPSG:5186";
 	private static final double DISTANCE = 5;

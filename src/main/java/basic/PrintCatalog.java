@@ -39,6 +39,8 @@ public class PrintCatalog {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
+		System.out.println(marmot.getSubDirAll("/", false));
+		
 		// 카다로그에 등록된 모든 레이어 등록정보를 출력한다.
 		List<DataSet> dsList = marmot.getDataSetAll();
 		for ( DataSet ds: dsList ) {

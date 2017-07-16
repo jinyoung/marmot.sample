@@ -28,6 +28,8 @@ public class Y2T_2 {
 	private static final String SID = "구역/시도";
 	private static final String TEMP_TAXI = "tmp/taxi";
 	private static final String RESULT = "tmp/result";
+	private static final String RESULT01 = "tmp/result_01";
+	private static final String RESULT03 = "tmp/result_03";
 	
 	private static final DimensionDouble CELL_SIZE = new DimensionDouble(1000,1000);
 	private static final int NWORKERS = 25;
@@ -69,36 +71,55 @@ public class Y2T_2 {
 		Geometry seoul = marmot.executeLocally(plan).toList().get(0).getGeometry(geomCol);
 		Envelope bounds = seoul.getEnvelopeInternal();
 		
-		plan = marmot.planBuilder("filter_taxi_logs")
+		plan = marmot.planBuilder("택시_승하차_로그_선택")
 					.load(TAXI_LOG)
 					.filter("status == 1 || status == 2")
+					.update("hour:int", "hour=ts.substring(8,10)")
 					.store(TEMP_TAXI)
 					.build();
 		marmot.deleteDataSet(TEMP_TAXI);
 		result = marmot.createDataSet(TEMP_TAXI, geomCol, srid, plan);
-		System.out.println("done: filter taxi_logs, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedTimeString());
 		result.cluster();
-		System.out.println("done: index taxi_logs, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedTimeString());
 		
 		String expr = "if ( status == null ) { supply = 0; demand = 0; }" 
 					+ "else if ( status == 2 ) { supply = 1; demand = 0; }"
-					+ "else if ( status == 1 ) { supply = 0; demand = 1; }";
+					+ "else if ( status == 1 ) { supply = 0; demand = 1; }"
+					+ "if ( hour == null ) { hour = 0; }";
 
 		// 버스 승하차 정보에서 서울 구역부분만 추출한다.
-		plan = marmot.planBuilder("build_square_grid")
+		plan = marmot.planBuilder("그리드_생성_후_셀별_승하차_횟수_집계")
 					.loadSquareGridFile(bounds, CELL_SIZE, NWORKERS)
-					.spatialOuterJoin("the_geom", TEMP_TAXI, INTERSECTS, "*,param.status")
+					.spatialOuterJoin("the_geom", TEMP_TAXI, INTERSECTS, "*,param.{hour,status}")
 					.update("supply:int,demand:int", expr)
-					.groupBy("cell_id")
+					.groupBy("cell_id,hour")
 						.taggedKeyColumns("the_geom")
 						.aggregate(SUM("supply").as("supply_count"),
 									SUM("demand").as("demand_count"))
 					.store(RESULT)
 					.build();
 		marmot.deleteDataSet(RESULT);
-		result = marmot.createDataSet(RESULT, geomCol, srid, plan);	
+		result = marmot.createDataSet(RESULT, geomCol, srid, plan);
+		
+		plan = marmot.planBuilder("새벽_01시_데이터  선택")
+					.load(RESULT)
+					.filter("hour == 1")
+					.store(RESULT01)
+					.build();
+		marmot.deleteDataSet(RESULT01);
+		result = marmot.createDataSet(RESULT01, geomCol, srid, plan);
+		
+		plan = marmot.planBuilder("새벽_03시_데이터  선택")
+					.load(RESULT)
+					.filter("hour == 3")
+					.store(RESULT03)
+					.build();
+		marmot.deleteDataSet(RESULT03);
+		result = marmot.createDataSet(RESULT03, geomCol, srid, plan);
+		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 5);
+//		SampleUtils.printPrefix(result, 5);
 	}
 }

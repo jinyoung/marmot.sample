@@ -21,7 +21,7 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class Step1 {
+public class Step2 {
 	private static final String FLOW_POP = "주민/유동인구/시간대/2015";
 	private static final String EMD = "구역/읍면동";
 	private static final String RESULT = "tmp/flowpop_emd";
