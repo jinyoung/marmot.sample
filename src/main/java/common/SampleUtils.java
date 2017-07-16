@@ -1,6 +1,11 @@
 package common;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Map;
+
+import org.apache.commons.lang.SystemUtils;
 
 import com.google.common.collect.Maps;
 
@@ -9,6 +14,7 @@ import marmot.MarmotRuntime;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
+import marmot.remote.robj.MarmotClient;
 import marmot.support.DefaultRecord;
 
 /**
@@ -16,6 +22,30 @@ import marmot.support.DefaultRecord;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleUtils {
+	private static final File TEMP_DIR;
+	static {
+		if ( SystemUtils.IS_OS_WINDOWS ) {
+			TEMP_DIR = new File("C:\\Temp");
+		}
+		else if ( SystemUtils.IS_OS_LINUX ) {
+			TEMP_DIR = new File(new File(System.getProperty("user.home")), "tmp");
+		}
+		else {
+			TEMP_DIR = new File(".");
+		}
+	}
+	
+	public static void writeAsShapefile(MarmotClient marmot, String dsId, String path)
+		throws IOException {
+		writeAsShapefile(marmot, marmot.getDataSet(dsId), path);
+	}
+	
+	public static void writeAsShapefile(MarmotClient marmot, DataSet ds, String path)
+		throws IOException {
+		File file = new File(TEMP_DIR, path);
+		marmot.writeToShapefile(ds, file, "main", Charset.forName("euc-kr"), false);
+	}
+	
 	public static void printPrefix(DataSet dataset, int count) {
 		printPrefix(dataset.read(), count);
 	}

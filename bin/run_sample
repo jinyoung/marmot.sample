@@ -1,4 +1,4 @@
 #!	/bin/bash
 
-java -cp $MARMOT_CLIENT_HOME/bin/marmot.client-1.1-all.jar:../build/libs/marmot.sample-0.1.jar	\
+java -cp $MARMOT_CLIENT_HOME/bin/marmot.client.jar:../build/libs/marmot.sample-0.1.jar	\
 $1 -host $MARMOT_HOST -port $MARMOT_PORT $2 $3 $4 $5
