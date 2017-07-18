@@ -1,9 +1,5 @@
 package oldbldr;
 
-import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.AggregateFunction.SUM;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -20,9 +16,8 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class Step0 {
-	private static final String BUILDINGS = "건물/통합정보";
-	private static final String EMD = "구역/읍면동";
-	private static final String RESULT = "tmp/building_age";
+	private static final String FLOW_POP = "주민/유동인구/월별_시간대/2015";
+	private static final String RESULT = "구역/지오비전_집계구pt";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -45,37 +40,21 @@ public class Step0 {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
-		DataSet emd = marmot.getDataSet(EMD);
-		String geomCol = emd.getGeometryColumn();
-		String srid = emd.getSRID();
+		DataSet info = marmot.getDataSet(FLOW_POP);
+		String geomCol = info.getGeometryColumn();
+		String srid = info.getSRID();
 		
-		String schema = "old:byte,be5:byte";
-		String init = "$now = ST_DateNow();";
-		String trans = "$date = (사용승인일자 != null && 사용승인일자.length() >= 8) "
-								+ "? ST_DateParse(사용승인일자,'yyyyMMdd') : null;"
-						+ "$period = ($date != null) ? ST_DateDaysBetween($date,$now) : -1;"
-						+ "$age = $period/365L;"
-						+ "old = $age >= 20 ? 1 : 0;"
-						+ "be5 = $age >= 5 ? 1 : 0;";
-		
-		Plan plan = marmot.planBuilder("find_old_buildings")
-								.load(BUILDINGS)
-								.update(schema, init, trans)
-								.spatialJoin("the_geom", EMD, INTERSECTS,
-											"원천도형ID,old,be5,"
-											+ "param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
-								.groupBy("emd_cd")
-									.taggedKeyColumns(geomCol + ",emd_nm")
-									.aggregate(SUM("old").as("old_cnt"),
-												SUM("be5").as("be5_cnt"),
-												COUNT().as("bld_cnt"))
-								.update("old_ratio:double",
-										"old_ratio = (double)old_cnt/bld_cnt")
-								.store(RESULT)
-								.build();
+		Plan plan;
+		plan = marmot.planBuilder("2015년도 소지역 점좌표 추출")
+					.load(FLOW_POP)
+					.project("the_geom,block_cd")
+					.distinct("block_cd")
+					.store(RESULT)
+					.build();
 		marmot.deleteDataSet(RESULT);
 		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
-		
+		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
+
 		SampleUtils.printPrefix(result, 10);
 	}
 }

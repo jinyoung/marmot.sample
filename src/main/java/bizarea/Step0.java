@@ -63,18 +63,12 @@ public class Step0 {
 		result = filterBizArea(marmot, TEMP_BIZ_AREA);
 		System.out.println("용도지구에서 상업지역 추출 완료, elapsed=" + watch.getElapsedTimeString());
 
-		String listExpr = Arrays.asList("일반상업지역","유통상업지역","근린상업지역",
-										"중심상업지역")
-								.stream()
-								.map(str -> "'" + str + "'")
-								.collect(Collectors.joining(",", "[", "]"));
-
 		DataSet info = marmot.getDataSet(CADASTRAL);
 		String srid = info.getSRID();
 		Envelope bounds = info.getBounds();
 		DimensionDouble cellSize = new DimensionDouble(100, 100);
 		
-		Plan plan = marmot.planBuilder("get_biz_grid")
+		Plan plan = marmot.planBuilder("대도시 상업지역 100mX100m 그리드 구역 생성")
 								// 용도지구에 대한 100m 크기의 그리드를 생성 
 								.loadSquareGridFile(bounds, cellSize)
 								// 상업지구에 겹치는 그리드 셀만 추출한다.
@@ -119,7 +113,7 @@ public class Step0 {
 		String geomCol = political.getGeometryColumn();
 		String srid = political.getSRID();
 		
-		Plan plan = marmot.planBuilder("filter_big_cities")
+		Plan plan = marmot.planBuilder("대도시지역 추출")
 								.load(POLITICAL)
 								.update("sid_cd:string,sgg_cd:string",
 										"sid_cd = bjd_cd.substring(0,2);"
@@ -166,9 +160,9 @@ public class Step0 {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 
-		Plan plan = marmot.planBuilder("filter_biz_area")
+		Plan plan = marmot.planBuilder("상업지역 추출")
 								.load(LAND_USAGE)
-								.filter(initExpr, "$types.contains('고유번호')")
+								.filter(initExpr, "$types.contains(dgm_nm)")
 								.project("the_geom")
 								.store(TEMP_BIZ_AREA)
 								.build();

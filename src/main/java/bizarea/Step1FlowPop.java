@@ -23,7 +23,7 @@ import utils.StopWatch;
  */
 public class Step1FlowPop {
 	private static final String BIZ_GRID = "tmp/bizarea/grid100";
-	private static final String FLOW_POP = "주민/유동인구/시간대/2015";
+	private static final String FLOW_POP = "주민/유동인구/월별_시간대/2015";
 	private static final String RESULT = "tmp/bizarea/grid100_pop";
 	
 	public static final void main(String... args) throws Exception {

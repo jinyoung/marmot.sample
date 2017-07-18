@@ -3,6 +3,7 @@ package oldbldr;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -10,7 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.optor.AggregateFunction;
+import marmot.optor.JoinOptions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -21,10 +22,11 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class Step1 {
-	private static final String FLOW_POP = "주민/유동인구/시간대/2015";
+public class Step1CardSales {
+	private static final String CARD_SALES = "주민/카드매출/월별_시간대/2015";
+	private static final String BLOCKS = "구역/지오비전_집계구pt";
 	private static final String EMD = "구역/읍면동";
-	private static final String RESULT = "tmp/flowpop_emd";
+	private static final String RESULT = "tmp/sales_emd";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -47,27 +49,38 @@ public class Step1 {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 
-		AggregateFunction[] aggrFuncs = IntStream.range(0, 24)
-								.mapToObj(idx -> String.format("avg_%02dtmst", idx))
-								.map(name -> SUM(name).as(name))
-								.toArray(sz -> new AggregateFunction[sz]);
+		String sumExpr = IntStream.range(0, 24)
+								.mapToObj(idx -> String.format("sale_amt_%02dtmst", idx))
+								.collect(Collectors.joining("+"));
+		sumExpr = "sale_amt = " + sumExpr;
 		
+		Plan plan;
 		DataSet info = marmot.getDataSet(EMD);
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		Plan plan = marmot.planBuilder("flow_pop_on_emd")
-							.load(FLOW_POP)
-							.spatialJoin("the_geom", EMD, INTERSECTS,
-									"*,param.{emd_cd,emd_kor_nm as emd_nm}")
-							.groupBy("emd_cd,std_ym")
-								.taggedKeyColumns(geomCol + ",emd_nm")
-								.aggregate(aggrFuncs)
-							.project(String.format("%s,*-{%s}", geomCol, geomCol))
-							.store(RESULT)
-							.build();
+		plan = marmot.planBuilder("읍면동별 2015년도 카드매출 집계")
+					.load(CARD_SALES)
+					.update("sale_amt:double", sumExpr)
+					.update("year:int", "year=std_ym.substring(0,4);")
+					.project("block_cd,year,sale_amt")
+					.groupBy("block_cd")
+						.taggedKeyColumns("year")
+						.aggregate(SUM("sale_amt").as("sale_amt"))
+					.join("block_cd", BLOCKS, "block_cd", "*,param.{the_geom}",
+							new JoinOptions().workerCount(64))
+					.spatialJoin("the_geom", EMD, INTERSECTS,
+							"*-{the_geom},param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
+					.groupBy("emd_cd")
+						.taggedKeyColumns(geomCol + ",year,emd_nm")
+						.workerCount(1)
+						.aggregate(SUM("sale_amt").as("sale_amt"))
+					.project(String.format("%s,*-{%s}", geomCol, geomCol))
+					.store(RESULT)
+					.build();
 		marmot.deleteDataSet(RESULT);
 		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
+		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 
 		SampleUtils.printPrefix(result, 10);
 	}

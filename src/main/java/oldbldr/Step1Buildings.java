@@ -1,11 +1,8 @@
-package bizarea;
+package oldbldr;
 
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -22,10 +19,10 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class Step1Building {
-	private static final String BIZ_GRID = "tmp/bizarea/grid100";
+public class Step1Buildings {
 	private static final String BUILDINGS = "건물/통합정보";
-	private static final String RESULT = "tmp/bizarea/grid100_land";
+	private static final String EMD = "구역/읍면동";
+	private static final String RESULT = "tmp/building_age";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -47,30 +44,34 @@ public class Step1Building {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
-
-		String avgExpr = IntStream.range(0, 24)
-								.mapToObj(idx -> String.format("avg_%02dtmst", idx))
-								.collect(Collectors.joining("+"));
-		avgExpr = String.format("flow_pop=(%s)/24", avgExpr);
 		
-		DataSet info = marmot.getDataSet(BIZ_GRID);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		Plan plan;
+		DataSet emd = marmot.getDataSet(EMD);
+		String geomCol = emd.getGeometryColumn();
+		String srid = emd.getSRID();
 		
-		Plan plan = marmot.planBuilder("대도시 상업지역 그리드 구역별 건축물 수와 면적 집계")
-								.load(BUILDINGS)
-								// BIZ_GRID와 소지역 코드를 이용하여 조인하여,
-								// 대도시 상업지역과 겹치는 건축물 구역을 뽑는다. 
-								.spatialJoin("the_geom", BIZ_GRID, INTERSECTS,
-											"건축물용도코드,대지면적,param.*")
-								// 그리드 셀, 건축물 용도별로 건물 수와 총 면점을 집계한다. 
-								.groupBy("cell_id,block_cd,건축물용도코드")
-									.taggedKeyColumns(geomCol + ",sgg_cd")
-									.aggregate(SUM("대지면적").as("대지면적"),
-												COUNT().as("bld_cnt"))
-								.project(String.format("%s,*-{%s}", geomCol, geomCol))
-								.store(RESULT)
-								.build();
+		String schema = "old:byte,be5:byte";
+		String init = "$now = ST_DateNow();";
+		String trans = "$date = (사용승인일자 != null && 사용승인일자.length() >= 8) "
+								+ "? ST_DateParse(사용승인일자,'yyyyMMdd') : null;"
+						+ "$period = ($date != null) ? ST_DateDaysBetween($date,$now) : -1;"
+						+ "$age = $period/365L;"
+						+ "old = $age >= 20 ? 1 : 0;"
+						+ "be5 = $age >= 5 ? 1 : 0;";
+		
+		plan = marmot.planBuilder("행정구역당 20년 이상된 건물 집계")
+					.load(BUILDINGS)
+					.update(schema, init, trans)
+					.spatialJoin("the_geom", EMD, INTERSECTS,
+								"원천도형ID,old,be5,param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
+					.groupBy("emd_cd")
+						.taggedKeyColumns(geomCol + ",emd_nm")
+						.workerCount(1)
+						.aggregate(SUM("old").as("old_cnt"), SUM("be5").as("be5_cnt"),
+									COUNT().as("bld_cnt"))
+					.update("old_ratio:double", "old_ratio = (double)old_cnt/bld_cnt")
+					.store(RESULT)
+					.build();
 		marmot.deleteDataSet(RESULT);
 		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
