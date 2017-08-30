@@ -57,7 +57,7 @@ public class Step1Building {
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
-		Plan plan = marmot.planBuilder("대도시 상업지역 그리드 구역별 건축물 수와 면적 집계")
+		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 건축물 수와 면적 집계")
 								.load(BUILDINGS)
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여,
 								// 대도시 상업지역과 겹치는 건축물 구역을 뽑는다. 

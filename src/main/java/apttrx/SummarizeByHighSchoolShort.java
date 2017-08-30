@@ -85,10 +85,13 @@ public class SummarizeByHighSchoolShort {
 							.aggregate(SUM("trade_count").as("trade_count"),
 										SUM("lease_count").as("lease_count"))
 						.update("count:long", "count=trade_count+lease_count")
+						.sort("count:D")
 						.store(RESULT)
 						.build();
 		marmot.deleteDataSet(RESULT);		
 		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
+		
+		marmot.deleteDataSet(TEMP);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 3);

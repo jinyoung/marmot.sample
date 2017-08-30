@@ -16,6 +16,7 @@ import org.apache.log4j.LogManager;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.optor.JoinOptions;
@@ -78,12 +79,7 @@ public class FindBestSubwayStationCandidates {
 		Geometry seoul = getSeoulBoundary(marmot);
 		
 		gridFlowPopulation(marmot, seoul, TEMP_FLOW_POP);
-//		SampleUtils.writeAsShapefile(marmot, TEMP_FLOW_POP, "grid_flow_pop.shp");
-//		System.out.println("done: grid flow_pop_seoul, elapsed=" + watch.getElapsedTimeString());
-		
 		gridTaxiLog(marmot, seoul, TEMP_TAXI_LOG);
-//		SampleUtils.writeAsShapefile(marmot, TEMP_TAXI_LOG, "grid_taxi_log.shp");
-//		System.out.println("done: grid taxi_log_seoul, elapsed=" + watch.getElapsedTimeString());
 		
 		String expr = "if ( portion == null ) {"
 					+ "		the_geom = param_geom;"
@@ -107,15 +103,14 @@ public class FindBestSubwayStationCandidates {
 					.build();
 		marmot.deleteDataSet(RESULT);
 		result = marmot.createDataSet(RESULT, GEOM_COL, SRID, plan);
-//		SampleUtils.writeAsShapefile(marmot, result, "result.shp");
 		
-//		marmot.deleteDataSet(TEMP_FLOW_POP);
-//		marmot.deleteDataSet(TEMP_TAXI_LOG);
-//		marmot.deleteDataSet(TEMP_STATIONS);
+		marmot.deleteDataSet(TEMP_FLOW_POP);
+		marmot.deleteDataSet(TEMP_TAXI_LOG);
+		marmot.deleteDataSet(TEMP_STATIONS);
 		
 		System.out.println("elapsed: " + watch.stopAndGetElpasedTimeString());
 		
-//		SampleUtils.printPrefix(result, 5);
+		SampleUtils.printPrefix(result, 5);
 	}
 	
 	private static Geometry getSeoulBoundary(MarmotClient marmot) {
