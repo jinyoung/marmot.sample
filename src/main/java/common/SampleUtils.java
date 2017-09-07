@@ -64,14 +64,19 @@ public class SampleUtils {
 							.toArray();
 		
 		int i = 0;
-		while ( ++i <= count && rset.next(record) ) {
-			Map<String,Object> values = Maps.newHashMap();
-			for ( int j =0; j < colIdxs.length; ++j ) {
-				String name = schema.getColumnAt(colIdxs[j]).getName();
-				Object value = record.get(colIdxs[j]);
-				values.put(name, value);
+		try {
+			while ( ++i <= count && rset.next(record) ) {
+				Map<String,Object> values = Maps.newHashMap();
+				for ( int j =0; j < colIdxs.length; ++j ) {
+					String name = schema.getColumnAt(colIdxs[j]).getName();
+					Object value = record.get(colIdxs[j]);
+					values.put(name, value);
+				}
+				System.out.println(values);
 			}
-			System.out.println(values);
+		}
+		finally {
+			rset.closeQuietly();
 		}
 	}
 }
