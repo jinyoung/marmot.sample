@@ -15,7 +15,7 @@ $ cd marmot.appls
 </code></pre>
 
 GitHub에서 `marmot.sample' 프로젝트를 download하고, 받은 zip 파일 (marmot.sample-master.zip)의
-압축을 풀고, 디렉토리 이름을 `marmot.client`로 변경한다.
+압축을 풀고, 디렉토리 이름을 `marmot.sample`로 변경한다.
 * GitHub URL 주소: `https://github.com/kwlee0220/marmot.sample`
 * 생성된  `marmot.sample` 디렉토리는 `$HOME/development/marmot/marmot.appls/marmot.sample`에 위치한다.
 
