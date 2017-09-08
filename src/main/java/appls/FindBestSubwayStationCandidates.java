@@ -19,6 +19,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
 import marmot.process.AttachPortionParameters;
 import marmot.remote.RemoteMarmotConnector;
@@ -60,8 +61,8 @@ public class FindBestSubwayStationCandidates {
 			cl.exitWithUsage(0);
 		}
 
-		String host = cl.getOptionValue("host", "localhost");
-		int port = cl.getOptionInt("port", 12985);
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

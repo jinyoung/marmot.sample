@@ -12,6 +12,7 @@ import marmot.DataSet;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
+import marmot.command.MarmotCommands;
 import marmot.geo.GeoFunctions;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -39,8 +40,8 @@ public class SampleCreateDataSet {
 			cl.exitWithUsage(0);
 		}
 
-		String host = cl.getOptionValue("host", "localhost");
-		int port = cl.getOptionInt("port", 12985);
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

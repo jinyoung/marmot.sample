@@ -16,6 +16,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.command.MarmotCommands;
 import marmot.process.geo.FeatureVector;
 import marmot.process.geo.FeatureVectorHandle;
 import marmot.process.geo.KMeansParameters;
@@ -69,8 +70,8 @@ public class Y2T_1 {
 			cl.exitWithUsage(0);
 		}
 
-		String host = cl.getOptionValue("host", "localhost");
-		int port = cl.getOptionInt("port", 12985);
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

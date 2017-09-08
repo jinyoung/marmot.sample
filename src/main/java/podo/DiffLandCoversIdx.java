@@ -1,12 +1,13 @@
 package podo;
 
 import static marmot.optor.AggregateFunction.SUM;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.Plan;
-import static marmot.optor.geo.SpatialRelation.*;
+import marmot.command.MarmotCommands;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -34,8 +35,8 @@ public class DiffLandCoversIdx {
 			cl.exitWithUsage(0);
 		}
 
-		String host = cl.getOptionValue("host", "localhost");
-		int port = cl.getOptionInt("port", 12985);
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

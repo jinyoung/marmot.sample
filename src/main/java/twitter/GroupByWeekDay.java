@@ -3,7 +3,7 @@ package twitter;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Plan;
-import marmot.RemotePlan;
+import marmot.command.MarmotCommands;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -30,8 +30,8 @@ public class GroupByWeekDay {
 			cl.exitWithUsage(0);
 		}
 
-		String host = cl.getOptionValue("host", "localhost");
-		int port = cl.getOptionInt("port", 12985);
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

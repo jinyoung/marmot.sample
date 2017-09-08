@@ -1,6 +1,5 @@
 package oldbldr;
 
-import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
@@ -12,7 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.optor.AggregateFunction;
+import marmot.command.MarmotCommands;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -40,8 +39,8 @@ public class Step1FlowPop {
 			cl.exitWithUsage(0);
 		}
 
-		String host = cl.getOptionValue("host", "localhost");
-		int port = cl.getOptionInt("port", 12985);
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

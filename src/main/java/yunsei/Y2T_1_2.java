@@ -16,6 +16,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
@@ -56,8 +57,8 @@ public class Y2T_1_2 {
 			cl.exitWithUsage(0);
 		}
 
-		String host = cl.getOptionValue("host", "localhost");
-		int port = cl.getOptionInt("port", 12985);
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

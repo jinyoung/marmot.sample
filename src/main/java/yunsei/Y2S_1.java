@@ -11,6 +11,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import marmot.DataSet;
 import marmot.DataSetType;
 import marmot.Plan;
+import marmot.command.MarmotCommands;
 import marmot.optor.geo.SpatialRelation;
 import marmot.process.geo.DistanceDecayFunctions;
 import marmot.process.geo.E2SFCAParameters;
@@ -52,8 +53,8 @@ public class Y2S_1 {
 			cl.exitWithUsage(0);
 		}
 
-		String host = cl.getOptionValue("host", "localhost");
-		int port = cl.getOptionInt("port", 12985);
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		
