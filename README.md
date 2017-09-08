@@ -3,8 +3,8 @@
 ### 1. 사전조건
 
 * Oracle Java (Java8 이상) 설치되어 있어야 한다.
-* [marmot.server.dist](https://github.com/kwlee0220/marmot.client.dist)를 사용할 수 있어야 한다.
-* [marmot.client.dist](https://github.com/kwlee0220/marmot.client.dist) 프로젝트가 설치되어 있어야 한다.
+* [Marmot 서버](https://github.com/kwlee0220/marmot.server.dist)를 사용할 수 있어야 한다.
+* [marmot.client.dist](https://github.com/kwlee0220/marmot.client.dist) 가 설치되어 있어야 한다.
 
 ### 2. 프로젝트 파일 다운로드 및 컴파일
 `$HOME/marmot` 디렉토리를 만들어서 이동한다. 
