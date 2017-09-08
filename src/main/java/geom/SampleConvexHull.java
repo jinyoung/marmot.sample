@@ -19,7 +19,7 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleConvexHull {
-	private static final String INPUT = "교통/버스/서울정류장";
+	private static final String INPUT = "교통/버스/서울/정류소";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
