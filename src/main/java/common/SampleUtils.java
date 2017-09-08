@@ -43,7 +43,7 @@ public class SampleUtils {
 	public static void writeAsShapefile(MarmotClient marmot, DataSet ds, String path)
 		throws IOException {
 		File file = new File(TEMP_DIR, path);
-		marmot.writeToShapefile(ds, file, "main", Charset.forName("euc-kr"), false);
+		marmot.writeToShapefile(ds, file, "main", Charset.forName("euc-kr"), false, false);
 	}
 	
 	public static void printPrefix(DataSet dataset, int count) {

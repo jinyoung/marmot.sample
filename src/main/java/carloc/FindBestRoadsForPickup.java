@@ -93,6 +93,6 @@ public class FindBestRoadsForPickup {
 
 		String file = String.format("/home/kwlee/tmp/%s_%02d.shp", baseName, hour);
 		marmot.writeToShapefile(rset, new File(file), "best_roads", SRID,
-								Charset.forName("euc-kr"), false);
+								Charset.forName("euc-kr"), false, false);
 	}
 }
