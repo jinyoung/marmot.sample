@@ -29,7 +29,7 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class Y2T_1_2 {
-	private static final String BUS_OT_DT = "연세대제공/서울버스_승하차";
+	private static final String BUS_OT_DT = "연세대/서울버스_승하차";
 	private static final String SID = "구역/시도";
 	private static final String COLLECT = "구역/집계구";
 	private static final String TEMP_BUS_SEOUL = "tmp/bus_seoul";

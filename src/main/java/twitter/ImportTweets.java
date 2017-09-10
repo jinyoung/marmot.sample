@@ -44,22 +44,21 @@ public class ImportTweets {
 		
 		// 질의 처리를 위한 질의 프로그램 생성
 		Plan plan = marmot.planBuilder("import_tweets")
-								// 'LOG_DIR' 디렉토리에 저장된 Tweet 로그 파일들을 읽는다.
-								.load(RAW_DIR)
-								// 'coordinates'의 위경도 좌표계를 EPSG:5186으로 변경한 값을
-								// 'the_geom' 컬럼에 저장시킨다.
-								.transformCRS("the_geom", "the_geom", "EPSG:4326", SRID)
-								// 중복된 id의 tweet를 제거시킨다.
-								.distinct("id")
-								// 'OUTPUT_LAYER'에 해당하는 레이어로 저장시킨다.
-								.store(OUTPUT_DATASET)
-								.build();
+							// 'LOG_DIR' 디렉토리에 저장된 Tweet 로그 파일들을 읽는다.
+							.load(RAW_DIR)
+							// 'coordinates'의 위경도 좌표계를 EPSG:5186으로 변경한 값을
+							// 'the_geom' 컬럼에 저장시킨다.
+							.transformCRS("the_geom", "the_geom", "EPSG:4326", SRID)
+							// 중복된 id의 tweet를 제거시킨다.
+							.distinct("id")
+							// 'OUTPUT_LAYER'에 해당하는 레이어로 저장시킨다.
+							.store(OUTPUT_DATASET)
+							.build();
 		
 		// 프로그램 수행 이전에 기존 OUTPUT_LAYER을 제거시킨다.
-//		marmot.deleteDataSet(OUTPUT_DATASET);
+		marmot.deleteDataSet(OUTPUT_DATASET);
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
-//		DataSet result = marmot.createDataSet(OUTPUT_DATASET, "the_geom", SRID, plan);
-		DataSet result = marmot.getDataSet(OUTPUT_DATASET);
+		DataSet result = marmot.createDataSet(OUTPUT_DATASET, "the_geom", SRID, plan);
 		result.cluster();
 		
 		watch.stop();
