@@ -23,7 +23,7 @@ import utils.StopWatch;
 public class SampleLoadHexagonGridFile {
 	private static final String INPUT = "교통/지하철/서울역사";
 	private static final String RESULT = "tmp/result";
-	private static final double SIDE_LEN = 100;
+	private static final double SIDE_LEN = 150;
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");

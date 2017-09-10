@@ -21,7 +21,7 @@ import utils.DimensionDouble;
  * @author Kang-Woo Lee (ETRI)
  */
 public class CalcHeatMap {
-	private static final String TAXI_LOG = "로그/나비콜";
+	private static final String TAXI_LOG = "로그/나비콜/택시로그";
 	private static final String SEOUL = "시연/서울특별시";
 	private static final String RESULT = "tmp/result";
 	
@@ -37,11 +37,11 @@ public class CalcHeatMap {
 		Envelope envl = border.getBounds();
 		Polygon key = GeoClientUtils.toPolygon(envl);
 		
-		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 30,
-														envl.getHeight() / 30);
+		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 50,
+														envl.getHeight() / 50);
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")
-								.loadSquareGridFile(envl, cellSize)
+								.loadSquareGridFile(envl, cellSize, 32)
 								.aggregateJoin("the_geom", TAXI_LOG, INTERSECTS, COUNT())
 								.store(RESULT)
 								.build();

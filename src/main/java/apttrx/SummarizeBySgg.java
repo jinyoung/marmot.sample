@@ -22,7 +22,7 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SummarizeBySgg {
-	private static final String APT_LOC = "tmp/아파트실매매/아파트위치";
+	private static final String APT_LOC = "주택/실거래/아파트위치";
 	private static final String APT_TRX = "주택/실거래/아파트매매";
 	private static final String SGG = "구역/시군구";
 	private static final String RESULT = "tmp/아파트실매매/시군구별";

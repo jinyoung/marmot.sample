@@ -95,5 +95,6 @@ public class SampleCreateDataSet {
 		ds.append(rset);
 		
 		SampleUtils.printPrefix(marmot.getDataSet("tmp/test"), 10);
+		marmot.disconnect();
 	}
 }

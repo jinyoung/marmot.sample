@@ -56,9 +56,10 @@ public class ImportTweets {
 								.build();
 		
 		// 프로그램 수행 이전에 기존 OUTPUT_LAYER을 제거시킨다.
-		marmot.deleteDataSet(OUTPUT_DATASET);
+//		marmot.deleteDataSet(OUTPUT_DATASET);
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
-		DataSet result = marmot.createDataSet(OUTPUT_DATASET, "the_geom", SRID, plan);
+//		DataSet result = marmot.createDataSet(OUTPUT_DATASET, "the_geom", SRID, plan);
+		DataSet result = marmot.getDataSet(OUTPUT_DATASET);
 		result.cluster();
 		
 		watch.stop();
