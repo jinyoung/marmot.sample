@@ -1,4 +1,4 @@
-package geom.join;
+package geom;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -16,10 +16,10 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleLoadSpatialIndexJoin {
+public class SampleSpatialJoin {
 	private static final String RESULT = "tmp/result";
-	private static final String OUTER = "교통/지하철/서울역사";
-	private static final String INNER = "구역/시군구";
+	private static final String BUS_STOPS = "POI/주유소_가격";
+	private static final String EMD = "구역/읍면동";
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -42,13 +42,13 @@ public class SampleLoadSpatialIndexJoin {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
-		Plan plan = marmot.planBuilder("load_spatial_index_join")
-								.loadSpatialIndexJoin(OUTER, INNER, SpatialRelation.INTERSECTS,
-														"left.*,right.{the_geom as the_geom2}")
-								.intersection("the_geom", "the_geom2", "the_geom", 1)
-								.project("*-{the_geom2}")
+		Plan plan = marmot.planBuilder("spatial_join")
+								.load(BUS_STOPS)
+								.spatialJoin("the_geom", EMD, SpatialRelation.INTERSECTS,
+											"*-{EMD_CD},param.*-{the_geom}")
 								.storeMarmotFile(RESULT)
 								.build();
+
 		marmot.deleteFile(RESULT);
 		marmot.execute(plan);
 		

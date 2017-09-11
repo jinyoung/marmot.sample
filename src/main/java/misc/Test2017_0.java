@@ -1,4 +1,4 @@
-package geom.advanced;
+package misc;
 
 import java.util.Arrays;
 import java.util.List;

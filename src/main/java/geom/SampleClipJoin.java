@@ -1,10 +1,10 @@
-package carloc;
+package geom;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import common.SampleUtils;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -15,11 +15,11 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class FindHotHospitalsTemp {
-	private static final String TAXI_LOG = "로그/나비콜/택시로그";
-	private static final String HOSPITAL = "시연/hospitals";
+public class SampleClipJoin {
 	private static final String RESULT = "tmp/result";
-	
+	private static final String OUTER = "POI/주유소_가격";
+	private static final String INNER = "시연/서울특별시";
+
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -35,27 +35,22 @@ public class FindHotHospitalsTemp {
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
 		
-		StopWatch watch;
-		watch = StopWatch.start();
+		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
-		Plan plan = marmot.planBuilder("find_hot_hospitals")
-								.load(TAXI_LOG)
-								.filter("status==1 || status==2")
-								.spatialJoin("the_geom", HOSPITAL,
-											SpatialRelation.WITHIN_DISTANCE(50),
-											"the_geom,param.{gid,bplc_nm,bz_stt_nm}")
-								.filter("bz_stt_nm=='운영중'")
-								.store(RESULT)
+		Plan plan = marmot.planBuilder("sample_clip_join")
+								.load(OUTER)
+								.clipJoin("the_geom", INNER)
+								.storeMarmotFile(RESULT)
 								.build();
 
-		marmot.deleteDataSet(RESULT);
-		marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan);
-		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
+		marmot.deleteFile(RESULT);
+		marmot.execute(plan);
 		
-//		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }

@@ -1,26 +1,30 @@
-package geom.join;
+package misc;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 import common.SampleUtils;
+import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.geo.SpatialRelation;
+import marmot.optor.AggregateFunction;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
+import utils.DimensionDouble;
 import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleSpatialJoin {
-	private static final String RESULT = "tmp/result";
-	private static final String BUS_STOPS = "POI/주유소_가격";
-	private static final String EMD = "구역/읍면동";
-
+public class Test2017_2 {
+	private static final String ADDR_BLD = "건물/위치";
+	private static final String ADDR_BLD_UTILS = "tmp/test2017/buildings_utils";
+	private static final String GRID = "tmp/test2017/grid30";
+	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -41,18 +45,26 @@ public class SampleSpatialJoin {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
-		
-		Plan plan = marmot.planBuilder("spatial_join")
-								.load(BUS_STOPS)
-								.spatialJoin("the_geom", EMD, SpatialRelation.INTERSECTS,
-											"*-{EMD_CD},param.*-{the_geom}")
-								.storeMarmotFile(RESULT)
-								.build();
 
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		DataSet info = marmot.getDataSet(ADDR_BLD);
+		Envelope bounds = info.getBounds();
+		DimensionDouble cellSize = new DimensionDouble(30, 30);
 		
-		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
+		Plan plan = marmot.planBuilder("get_biz_grid")
+								.load(ADDR_BLD_UTILS)
+								.buffer("the_geom", "buffer", 100, 16)
+								.assignSquareGridCell("buffer", bounds, cellSize)
+								.centroid("cell_geom", "cell_geom")
+								.intersects("cell_geom", "the_geom")
+								.groupBy("cell_id")
+									.taggedKeyColumns("cell_geom")
+									.aggregate(AggregateFunction.COUNT())
+								.project("cell_geom as the_geom,*-{cell_geom}")
+								.store(GRID)
+								.build();
+		marmot.deleteDataSet(GRID);
+		DataSet result = marmot.createDataSet(GRID, "the_geom", info.getSRID(), plan);
+		
+		SampleUtils.printPrefix(result, 5);
 	}
 }

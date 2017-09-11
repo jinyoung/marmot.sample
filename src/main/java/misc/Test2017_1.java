@@ -1,4 +1,4 @@
-package geom.advanced;
+package misc;
 
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;

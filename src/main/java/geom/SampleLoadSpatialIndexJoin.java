@@ -1,30 +1,26 @@
-package geom.advanced;
+package geom;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 import common.SampleUtils;
-import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.AggregateFunction;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
 import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class Test2017_2 {
-	private static final String ADDR_BLD = "건물/위치";
-	private static final String ADDR_BLD_UTILS = "tmp/test2017/buildings_utils";
-	private static final String GRID = "tmp/test2017/grid30";
-	
+public class SampleLoadSpatialIndexJoin {
+	private static final String RESULT = "tmp/result";
+	private static final String OUTER = "교통/지하철/서울역사";
+	private static final String INNER = "구역/시군구";
+
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -45,26 +41,18 @@ public class Test2017_2 {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
-
-		DataSet info = marmot.getDataSet(ADDR_BLD);
-		Envelope bounds = info.getBounds();
-		DimensionDouble cellSize = new DimensionDouble(30, 30);
 		
-		Plan plan = marmot.planBuilder("get_biz_grid")
-								.load(ADDR_BLD_UTILS)
-								.buffer("the_geom", "buffer", 100, 16)
-								.assignSquareGridCell("buffer", bounds, cellSize)
-								.centroid("cell_geom", "cell_geom")
-								.intersects("cell_geom", "the_geom")
-								.groupBy("cell_id")
-									.taggedKeyColumns("cell_geom")
-									.aggregate(AggregateFunction.COUNT())
-								.project("cell_geom as the_geom,*-{cell_geom}")
-								.store(GRID)
+		Plan plan = marmot.planBuilder("load_spatial_index_join")
+								.loadSpatialIndexJoin(OUTER, INNER, SpatialRelation.INTERSECTS,
+														"left.*,right.{the_geom as the_geom2}")
+								.intersection("the_geom", "the_geom2", "the_geom", 1)
+								.project("*-{the_geom2}")
+								.storeMarmotFile(RESULT)
 								.build();
-		marmot.deleteDataSet(GRID);
-		DataSet result = marmot.createDataSet(GRID, "the_geom", info.getSRID(), plan);
+		marmot.deleteFile(RESULT);
+		marmot.execute(plan);
 		
-		SampleUtils.printPrefix(result, 5);
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }
