@@ -29,7 +29,7 @@ Eclipse IDE를 이용하려는 경우 `eclipse` Gradle task를 수행시켜 Ecli
 #### 3.1 Package: `basic`
 
 Marmot client를 사용하는 기본적인 기능의 예제를 보여주는 샘플 프로그램들이다.
-* `basic.SampleCatalog
+* `basic.SampleCatalog`
 * `basic.SampleCreateDataSet`
 * `basic.SampleFilter` 
 * `basic.SampleUpdate` 
