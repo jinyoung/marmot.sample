@@ -1,12 +1,12 @@
-## 설치 방법
+# 설치 방법
 
-### 1. 사전조건
+## 1. 사전조건
 
 * Oracle Java (Java8 이상) 설치되어 있어야 한다.
 * [Marmot 서버](https://github.com/kwlee0220/marmot.server.dist)를 사용할 수 있어야 한다.
 * [marmot.client.dist](https://github.com/kwlee0220/marmot.client.dist) 가 설치되어 있어야 한다.
 
-### 2. 프로젝트 파일 다운로드 및 컴파일
+## 2. 프로젝트 파일 다운로드 및 컴파일
 `$HOME/marmot` 디렉토리를 만들어서 이동한다. 
 <pre><code>$ cd $HOME/marmot</code></pre>
 
@@ -23,3 +23,28 @@ $ gradle copyJarToBin
 Eclipse IDE를 이용하려는 경우 `eclipse` Gradle task를 수행시켜 Eclipse 프로젝트 import에
 필요한 `.project` 파일과 `.classpath` 파일을 생성시킨다.
 <pre><code>$ gradle eclipse</code></pre>
+
+## 3. 샘플 설명
+
+#### 3.1 Package: `basic`
+
+Marmot client를 사용하는 기본적인 기능의 예제를 보여주는 샘플 프로그램들이다.
+
+#### 3.2 Package: `geom`
+
+Marmot이 제공하는 기능 중에 공간 정보를 사용하는 예제를 보여주는 샘플 프로그램들이다.
+
+#### 3.3 Package: `geom.advanced`
+
+Marmot이 제공하는 기능 중에 공간 정보를 활용하는 고급 분석 기능을 활용하는 예제를 보여주는 샘플 프로그램들이다.
+
+#### 3.4 Package: `carloc`
+
+나비콜에서 제공하는 택시 주행 로그를 활용하는 예제 샘플 프로그램들이다.
+* `carloc.CalcHeatMap`: 택시 주행 로그를 서울시 영역 내의 사각 그리드를 기준으로 분류하는 예제 프로그램.
+* `carloc.FindBestRoadsForPickup`: 시간대 별로 *공차* 택시가 가장 많은 도로 구간을 분석하는 예제 프로그램.
+* `carloc.FindHotHospitals`: 서울 시내 종합병원 근처 50m 이내에서 택시 승하차 횟수를 수집하는 예제 프로그램.
+* `carloc.FindHotTaxiPlaces`: 서울 시내 읍면동별로 택시 승하차 횟수를 수집하는 예제 프로그램.
+* `carloc.FindLongTaxiTravels`: 택시 주행 경로 데이터 중에서 승차 경로의 전체 길이 별로 나열하는 예제 프로그램.
+* `carloc.FindPassingStation`: 택시 주행 경로 데이터 중에서 *사당역*주변 100m 이내로 승차 택시 경로가 겹치는
+	모든 경로를 찾는 예제 프로그램
