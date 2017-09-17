@@ -47,6 +47,10 @@ public class Step1FlowPop {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
+		
+		String handleNull = IntStream.range(0, 24)
+				.mapToObj(idx -> String.format("if ( avg_%02dtmst == null ) { avg_%02dtmst = 0; }%n", idx, idx))
+				.collect(Collectors.joining());
 
 		String avgExpr = IntStream.range(0, 24)
 								.mapToObj(idx -> String.format("avg_%02dtmst", idx))
@@ -59,6 +63,7 @@ public class Step1FlowPop {
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 유동인구수 집계")
 								.load(FLOW_POP)
+								.update(handleNull)
 								// 시간대 단위의 유동인구는 모두 합쳐 하루 매출액을 계산한다. 
 								.update("flow_pop:double", avgExpr)
 								.project("std_ym,block_cd,flow_pop")

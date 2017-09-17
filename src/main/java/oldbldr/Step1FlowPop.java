@@ -47,6 +47,10 @@ public class Step1FlowPop {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
+		
+		String handleNull = IntStream.range(0, 24)
+				.mapToObj(idx -> String.format("if ( avg_%02dtmst == null ) { avg_%02dtmst = 0; }%n", idx, idx))
+				.collect(Collectors.joining());
 
 		String avgExpr = IntStream.range(0, 24)
 								.mapToObj(idx -> String.format("avg_%02dtmst", idx))
@@ -59,6 +63,7 @@ public class Step1FlowPop {
 		
 		Plan plan = marmot.planBuilder("읍면동별 2015년도 유동인구 집계")
 							.load(FLOW_POP)
+							.update(handleNull)
 							.update("avg:double", avgExpr)
 							.update("year:int", "year=std_ym.substring(0,4);")
 							.project("the_geom,block_cd,year,avg")

@@ -1,11 +1,13 @@
 package geom;
 
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -44,15 +46,16 @@ public class SampleSpatialJoin {
 		
 		Plan plan = marmot.planBuilder("spatial_join")
 								.load(BUS_STOPS)
-								.spatialJoin("the_geom", EMD, SpatialRelation.INTERSECTS,
-											"*-{EMD_CD},param.*-{the_geom}")
-								.storeMarmotFile(RESULT)
+								.spatialJoin("the_geom", EMD, INTERSECTS,
+											"*,param.emd_kor_nm as emd_name")
+								.store(RESULT)
 								.build();
 
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		marmot.deleteDataSet(RESULT);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan);
+		System.out.println("elapsed time=" + watch.stopAndGetElpasedTimeString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
+		SampleUtils.printPrefix(result, 10);
 	}
 }

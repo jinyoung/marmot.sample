@@ -49,6 +49,7 @@ public class SampleClipJoin {
 
 		marmot.deleteFile(RESULT);
 		marmot.execute(plan);
+		System.out.println("elapsed time=" + watch.stopAndGetElpasedTimeString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
