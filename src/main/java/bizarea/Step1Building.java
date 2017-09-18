@@ -67,6 +67,7 @@ public class Step1Building {
 								// 그리드 셀, 건축물 용도별로 건물 수와 총 면점을 집계한다. 
 								.groupBy("cell_id,block_cd,건축물용도코드")
 									.taggedKeyColumns(geomCol + ",sgg_cd")
+									.workerCount(3)
 									.aggregate(SUM("대지면적").as("대지면적"),
 												COUNT().as("bld_cnt"))
 								.project(String.format("%s,*-{%s}", geomCol, geomCol))

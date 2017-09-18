@@ -85,7 +85,7 @@ public class SummarizeByHighSchoolShort {
 							.taggedKeyColumns(geomCol + ",name")
 							.aggregate(SUM("trade_count").as("trade_count"),
 										SUM("lease_count").as("lease_count"))
-						.update("count:long", "count=trade_count+lease_count")
+						.expand("count:long", "count=trade_count+lease_count")
 						.sort("count:D")
 						.store(RESULT)
 						.build();
@@ -123,7 +123,7 @@ public class SummarizeByHighSchoolShort {
 					.groupBy("id")
 						.taggedKeyColumns(schoolGeomCol + ",name")
 						.aggregate(COUNT().as("trade_count"))
-					.update("lease_count:long", "lease_count = 0")
+					.expand("lease_count:long", "lease_count = 0")
 					.project("the_geom,id,name,trade_count,lease_count")
 					
 					.store(TEMP)
@@ -155,7 +155,7 @@ public class SummarizeByHighSchoolShort {
 					.groupBy("id")
 						.taggedKeyColumns(schoolGeomCol + ",name")
 						.aggregate(COUNT().as("lease_count"))
-					.update("trade_count:long", "trade_count = 0")
+					.expand("trade_count:long", "trade_count = 0")
 					.project("the_geom,id,name,trade_count,lease_count")
 					
 					.store(TEMP)

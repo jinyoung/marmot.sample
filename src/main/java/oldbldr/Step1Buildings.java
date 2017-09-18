@@ -62,7 +62,7 @@ public class Step1Buildings {
 		
 		plan = marmot.planBuilder("행정구역당 20년 이상된 건물 집계")
 					.load(BUILDINGS)
-					.update(schema, init, trans)
+					.expand(schema, init, trans)
 					.spatialJoin("the_geom", EMD, INTERSECTS,
 								"원천도형ID,old,be5,param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 					.groupBy("emd_cd")
@@ -70,7 +70,7 @@ public class Step1Buildings {
 						.workerCount(1)
 						.aggregate(SUM("old").as("old_cnt"), SUM("be5").as("be5_cnt"),
 									COUNT().as("bld_cnt"))
-					.update("old_ratio:double", "old_ratio = (double)old_cnt/bld_cnt")
+					.expand("old_ratio:double", "old_ratio = (double)old_cnt/bld_cnt")
 					.store(RESULT)
 					.build();
 		marmot.deleteDataSet(RESULT);

@@ -59,7 +59,7 @@ public class FindBestRoadsForPickup {
 		plan = marmot.planBuilder("match_and_rank_roads")
 						.load(TAXI_LOG)
 						.filter("status == 0")
-						.update("hour:int", "hour=ts.substring(8,10)")
+						.expand("hour:int", "hour=ts.substring(8,10)")
 						.knnJoin("the_geom", ROADS, 1, WITHIN_DISTANCE(10),
 								"hour,car_no,param.{LINK_ID,the_geom,ROAD_NAME,ROADNAME_A}")
 						.groupBy("hour,LINK_ID")

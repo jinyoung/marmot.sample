@@ -61,7 +61,7 @@ public class Step1CardSales {
 								// 전국 카드매출액 파일을 읽는다.
 								.load(CARD_SALES)
 								// 시간대 단위의 매출액은 모두 합쳐 하루 매출액을 계산한다. 
-								.update("daily_sales:double", sumExpr)
+								.expand("daily_sales:double", sumExpr)
 								.project("std_ym,block_cd,daily_sales")
 								// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 								// 매출액 구역을 뽑는다.
@@ -72,6 +72,7 @@ public class Step1CardSales {
 								// 해당 매출액은 모두 더한다. 
 								.groupBy("std_ym,cell_id")
 									.taggedKeyColumns(geomCol + ",sgg_cd")
+									.workerCount(3)
 									.aggregate(SUM("daily_sales").as("daily_sales"))
 								.project(String.format("%s,*-{%s}", geomCol, geomCol))
 								.store(RESULT)

@@ -55,17 +55,17 @@ public class Step1FlowPop {
 		String avgExpr = IntStream.range(0, 24)
 								.mapToObj(idx -> String.format("avg_%02dtmst", idx))
 								.collect(Collectors.joining("+", "(", ")"));
-		avgExpr = String.format("avg = %s / 24", avgExpr);
+		avgExpr = String.format("avg = %s / 24;", avgExpr);
+		String script = avgExpr + "year=std_ym.substring(0,4);";
 		
 		DataSet info = marmot.getDataSet(EMD);
 		String geomCol = info.getGeometryColumn();
 		String srid = info.getSRID();
 		
 		Plan plan = marmot.planBuilder("읍면동별 2015년도 유동인구 집계")
-							.load(FLOW_POP)
+							.load(FLOW_POP, 4)
 							.update(handleNull)
-							.update("avg:double", avgExpr)
-							.update("year:int", "year=std_ym.substring(0,4);")
+							.expand("avg:double, year:int", script)
 							.project("the_geom,block_cd,year,avg")
 							.spatialJoin("the_geom", EMD, INTERSECTS,
 									"*-{the_geom},param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")

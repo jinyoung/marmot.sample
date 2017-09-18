@@ -27,10 +27,10 @@ public class FindLongTaxiTravels {
 		Plan plan = marmot.planBuilder("find_long_travels")
 								.load(TAXI_TRJ)
 								.filter("status == 3")
-								.update("length:double",
+								.expand("length:double",
 										"length = ST_TRLength(trajectory)")
 								.pickTopK("length:D", 10)
-								.update("the_geom:line_string",
+								.expand("the_geom:line_string",
 										"the_geom = ST_TRLineString(trajectory)")
 								.project("*-{trajectory}")
 								.store(RESULT)

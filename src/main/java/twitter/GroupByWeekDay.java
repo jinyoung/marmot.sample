@@ -44,7 +44,7 @@ public class GroupByWeekDay {
 		Plan plan = marmot.planBuilder("group_by_weekday_and_count")
 								.load(TWEETS)
 								.project("id,created_at")
-								.update("week_day:int", "week_day = ST_DTWeekDay(created_at)")
+								.expand("week_day:int", "week_day = ST_DTWeekDay(created_at)")
 								.groupBy("week_day").count()
 								.skip(0)
 								.storeAsCsv(RESULT)

@@ -176,7 +176,7 @@ public class FindBestSubwayStationCandidates {
 					// 일부 시간대 유동인구가 null인 경우 0으로 치환한다.
 					.update(expr)
 					// 각 시간대의 유동인구를 모두 더해 하루동안의 유동인구를 계산
-					.update("avg:double", sumExpr)
+					.expand("avg:double", sumExpr)
 					.project("the_geom,std_ym,block_cd,avg")
 					// 각 달의 소지역의 평균 유동인구를 계산한다.
 					.groupBy("block_cd")

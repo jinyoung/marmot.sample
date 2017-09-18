@@ -116,7 +116,7 @@ public class Step0 {
 		
 		Plan plan = marmot.planBuilder("대도시지역 추출")
 								.load(POLITICAL)
-								.update("sid_cd:string,sgg_cd:string",
+								.expand("sid_cd:string,sgg_cd:string",
 										"sid_cd = bjd_cd.substring(0,2);"
 										+ "sgg_cd = bjd_cd.substring(0,5);")
 								.filter(initExpr,
@@ -136,7 +136,7 @@ public class Step0 {
 		
 		Plan plan = marmot.planBuilder("filter_big_cities")
 								.load(CADASTRAL)
-								.update("sid_cd:string,sgg_cd:string",
+								.expand("sid_cd:string,sgg_cd:string",
 										"sid_cd = pnu.substring(0,2);"
 										+ "sgg_cd = pnu.substring(0,5);")
 								.filter(initExpr,
