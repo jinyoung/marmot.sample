@@ -16,7 +16,7 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleUpdate {
+public class SampleExpand {
 	private static final String INPUT = "교통/지하철/서울역사";
 	private static final String RESULT = "tmp/result";
 	

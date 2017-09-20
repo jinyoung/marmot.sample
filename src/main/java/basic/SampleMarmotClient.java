@@ -5,6 +5,8 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.PlanExecution;
+import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
 import marmot.remote.RemoteMarmotConnector;
@@ -64,6 +66,12 @@ public class SampleMarmotClient {
 							.build();
 		marmot.deleteDataSet("tmp/result");
 		ds = marmot.createDataSet("tmp/result", plan3);
+		
+//		RecordSchema schema = marmot.getOutputRecordSchema(plan3);
+//		marmot.createDataSet("tmp/result", schema);
+//		PlanExecution exec = marmot.executeAsync(plan3, false);
+//		exec.waitForDone();
+		
 		SampleUtils.printPrefix(ds, 5);
 		
 		marmot.disconnect();

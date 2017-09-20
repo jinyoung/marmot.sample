@@ -63,7 +63,7 @@ public class Step1FlowPop {
 		String srid = info.getSRID();
 		
 		Plan plan = marmot.planBuilder("읍면동별 2015년도 유동인구 집계")
-							.load(FLOW_POP, 4)
+							.load(FLOW_POP)
 							.update(handleNull)
 							.expand("avg:double, year:int", script)
 							.project("the_geom,block_cd,year,avg")

@@ -10,6 +10,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.SpatialRelation;
@@ -53,20 +54,10 @@ public class SummarizeByHighSchoolLong {
 		Plan plan;
 		
 		//전국초중등학교 정보에서 고등학교만 뽑는다.
-		DataSet highSchools = marmot.getDataSet(HIGH_SCHOOLS, null);
+		DataSet highSchools = marmot.getDataSetOrNull(HIGH_SCHOOLS);
 		if ( highSchools == null ) {
-			DataSet ds = marmot.getDataSet(SCHOOLS);
-			String geomCol = ds.getGeometryColumn();
-			String srid = ds.getSRID();
-		
-			plan = marmot.planBuilder("find_high_school")
-						.load(SCHOOLS)
-						.filter("type == '고등학교'")
-						.store(HIGH_SCHOOLS)
-						.build();
-			highSchools = marmot.createDataSet(HIGH_SCHOOLS, geomCol, srid, plan);
+			highSchools = findHighSchool(marmot);
 		}
-		
 		String geomCol = highSchools.getGeometryColumn();
 		String srid = highSchools.getSRID();
 		
@@ -119,5 +110,18 @@ public class SummarizeByHighSchoolLong {
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 3);
+	}
+	
+	private static DataSet findHighSchool(MarmotRuntime marmot) {
+		DataSet ds = marmot.getDataSet(SCHOOLS);
+		String geomCol = ds.getGeometryColumn();
+		String srid = ds.getSRID();
+	
+		Plan plan = marmot.planBuilder("find_high_school")
+							.load(SCHOOLS)
+							.filter("type == '고등학교'")
+							.store(HIGH_SCHOOLS)
+							.build();
+		return marmot.createDataSet(HIGH_SCHOOLS, geomCol, srid, plan);
 	}
 }

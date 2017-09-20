@@ -59,6 +59,7 @@ public class SplitLandCover {
 		
 		Plan plan = marmot.planBuilder(inputDsId + "_분할")
 							.load(inputDsId, 16)
+							.assignUid("uid")
 							.splitGeometry(geomCol)
 							.skip(0)
 							.store(outputDsId)
