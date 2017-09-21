@@ -1,11 +1,11 @@
 package basic;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.PropertyConfigurator;
 
-import common.SampleUtils;
-import marmot.DataSet;
-import marmot.Plan;
 import marmot.PlanExecution;
+import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
@@ -13,6 +13,7 @@ import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
+import utils.async.AsyncExecution;
 
 /**
  * 
@@ -42,37 +43,57 @@ public class SampleMarmotClient {
 		marmot.deleteFile("tmp/result");
 		marmot.writeMarmotFile("tmp/result", rset);
 		
-		Plan plan = marmot.planBuilder("test")
-							.load("교통/지하철/서울역사")
-							.filter("kor_sub_nm.length() > 5")
-							.project("sub_sta_sn,kor_sub_nm")
-							.build();
-		rset = marmot.executeLocally(plan);
-		SampleUtils.printPrefix(rset, 5);
-		
-		DataSet ds = marmot.getDataSet("교통/지하철/서울역사");
-		Plan plan2 = marmot.planBuilder("test2")
-							.filter("kor_sub_nm.length() > 5")
-							.project("sub_sta_sn,kor_sub_nm")
-							.build();
-		rset = marmot.executeLocally(plan2, ds.read());
-		SampleUtils.printPrefix(rset, 5);
+//		Plan plan = marmot.planBuilder("test")
+//							.load("교통/지하철/서울역사")
+//							.filter("kor_sub_nm.length() > 5")
+//							.project("sub_sta_sn,kor_sub_nm")
+//							.build();
+//		rset = marmot.executeLocally(plan);
+//		SampleUtils.printPrefix(rset, 5);
+//		
+//		DataSet ds = marmot.getDataSet("교통/지하철/서울역사");
+//		Plan plan2 = marmot.planBuilder("test2")
+//							.filter("kor_sub_nm.length() > 5")
+//							.project("sub_sta_sn,kor_sub_nm")
+//							.build();
+//		rset = marmot.executeLocally(plan2, ds.read());
+//		SampleUtils.printPrefix(rset, 5);
 		
 		Plan plan3 = marmot.planBuilder("test")
-							.load("교통/지하철/서울역사")
-							.filter("kor_sub_nm.length() > 5")
-							.project("sub_sta_sn,kor_sub_nm")
+							.load("POI/주유소_가격")
+							.filter("휘발유 > 1400;")
+							.project("상호,휘발유,주소")
 							.store("tmp/result")
 							.build();
 		marmot.deleteDataSet("tmp/result");
-		ds = marmot.createDataSet("tmp/result", plan3);
+//		ds = marmot.createDataSet("tmp/result", plan3);
 		
-//		RecordSchema schema = marmot.getOutputRecordSchema(plan3);
-//		marmot.createDataSet("tmp/result", schema);
-//		PlanExecution exec = marmot.executeAsync(plan3, false);
-//		exec.waitForDone();
+		PlanExecution exec;
+		RecordSchema schema = marmot.getOutputRecordSchema(plan3);
+		marmot.createDataSet("tmp/result", schema);
+		exec = marmot.createPlanExecution(plan3);
+		exec.disableLocalExecution();
+		exec.start();
+		System.out.println(exec.getResult());
+
+		Plan plan4 = marmot.planBuilder("test")
+							.load("POI/주유소_가격")
+							.filter("Thread.sleep(50); 휘발유 > 1400;")
+							.project("상호,휘발유,주소")
+							.store("tmp/result")
+							.build();
+		marmot.deleteDataSet("tmp/result");
+		marmot.createDataSet("tmp/result", schema);
+		exec = marmot.createPlanExecution(plan4);
+		exec.start();
+		boolean to = exec.waitForDone(2, TimeUnit.SECONDS);
+		if ( to ) {
+			System.err.println("should be false");
+		}
+		exec.cancel();
+		System.out.println(exec.getResult());
 		
-		SampleUtils.printPrefix(ds, 5);
+//		SampleUtils.printPrefix(ds, 5);
 		
 		marmot.disconnect();
 	}
