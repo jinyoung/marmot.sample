@@ -20,6 +20,12 @@ GitHub에서 `marmot.sample' 프로젝트를 download하고, 받은 zip 파일 (
 $ gradle assemble
 </code></pre>
 
+컴파일 도중 오류가 발생될 수 있는데 이경우 `$HOME/.gradle 디렉토리로 이동하여
+다음과 같은 내용의 `gradle.properties` 파일을 생성한다.
+<pre><code>distRepositoryDir=/home/xxx/marmot/dists
+</code></pre>
+여기서 `/home/xxx`는 사용자 홈디렉토리 경로명을 의미한다. 위 파일을 생성한 뒤 앞선 gradle 명령어를 사용하여 컴파일을 시도한다.
+
 Eclipse IDE를 이용하려는 경우 `eclipse` Gradle task를 수행시켜 Eclipse 프로젝트 import에
 필요한 `.project` 파일과 `.classpath` 파일을 생성시킨다.
 <pre><code>$ gradle eclipse</code></pre>
