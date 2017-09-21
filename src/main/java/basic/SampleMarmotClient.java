@@ -4,8 +4,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.PlanExecution;
+import common.SampleUtils;
+import marmot.DataSet;
 import marmot.Plan;
+import marmot.PlanExecution;
 import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
@@ -13,7 +15,6 @@ import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.async.AsyncExecution;
 
 /**
  * 
@@ -38,40 +39,64 @@ public class SampleMarmotClient {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
-		
-		RecordSet rset = marmot.readMarmotFile("database/heap/교통/지하철/서울역사");
-		marmot.deleteFile("tmp/result");
-		marmot.writeMarmotFile("tmp/result", rset);
-		
-//		Plan plan = marmot.planBuilder("test")
-//							.load("교통/지하철/서울역사")
-//							.filter("kor_sub_nm.length() > 5")
-//							.project("sub_sta_sn,kor_sub_nm")
-//							.build();
-//		rset = marmot.executeLocally(plan);
-//		SampleUtils.printPrefix(rset, 5);
-//		
-//		DataSet ds = marmot.getDataSet("교통/지하철/서울역사");
-//		Plan plan2 = marmot.planBuilder("test2")
-//							.filter("kor_sub_nm.length() > 5")
-//							.project("sub_sta_sn,kor_sub_nm")
-//							.build();
-//		rset = marmot.executeLocally(plan2, ds.read());
-//		SampleUtils.printPrefix(rset, 5);
-		
-		Plan plan3 = marmot.planBuilder("test")
-							.load("POI/주유소_가격")
-							.filter("휘발유 > 1400;")
-							.project("상호,휘발유,주소")
-							.store("tmp/result")
-							.build();
+
 		marmot.deleteDataSet("tmp/result");
-//		ds = marmot.createDataSet("tmp/result", plan3);
+		
+		DataSet ds;
+		
+		// 데이터세트를 읽어 화면에 출력
+		//
+		ds = marmot.getDataSet("교통/지하철/서울역사");
+		try ( RecordSet rset = ds.read() ) {
+			rset.forEach(System.out::println);
+		}
+		
+		Plan plan;
+		RecordSet rset;
+		
+		// Plan을 이용한 데이터 접근
+		//
+		plan = marmot.planBuilder("test")
+					.load("교통/지하철/서울역사")
+					.filter("kor_sub_nm.length() > 5")
+					.project("sub_sta_sn,kor_sub_nm")
+					.build();
+		rset = marmot.executeLocally(plan);
+		SampleUtils.printPrefix(rset, 5);
+		
+		// 사용자가 제공하는 입력 레코드세트를 활용한 Plan 수행.
+		//
+		ds = marmot.getDataSet("교통/지하철/서울역사");
+		plan = marmot.planBuilder("test2")
+					.filter("kor_sub_nm.length() > 5")
+					.project("sub_sta_sn,kor_sub_nm")
+					.build();
+		rset = marmot.executeLocally(plan, ds.read());
+		SampleUtils.printPrefix(rset, 5);
+		
+		// MR을 활용하는 Plan 수행.
+		//
+		// 1. 실행시킬 Plan 객체 생성.
+		plan = marmot.planBuilder("test")
+					.load("POI/주유소_가격")
+					.filter("휘발유 > 1400;")
+					.project("상호,휘발유,주소")
+					.store("tmp/result")
+					.build();
+		// 2. 결과가 기록될 빈 데이터세트 생성.
+		// 2.1 Plan실행 결과로 생성될 레코드세트의 스키마 계산
+		RecordSchema schema = marmot.getOutputRecordSchema(plan);
+		// 2.2 계산된 스키마를 통한 데이터세트 생성.
+		ds = marmot.createDataSet("tmp/result", schema);
+		// 3. Plan 실행
+		marmot.execute(plan);
+		// 4. Plan 실행 결과 채워진 데이터세트 내용 접근 및 출력
+		SampleUtils.printPrefix(ds, 5);
 		
 		PlanExecution exec;
-		RecordSchema schema = marmot.getOutputRecordSchema(plan3);
+		schema = marmot.getOutputRecordSchema(plan);
 		marmot.createDataSet("tmp/result", schema);
-		exec = marmot.createPlanExecution(plan3);
+		exec = marmot.createPlanExecution(plan);
 		exec.disableLocalExecution();
 		exec.start();
 		System.out.println(exec.getResult());

@@ -47,7 +47,9 @@ public class SampleUtils {
 	}
 	
 	public static void printPrefix(DataSet dataset, int count) {
-		printPrefix(dataset.read(), count);
+		try ( RecordSet rset = dataset.read() ) {
+			printPrefix(dataset.read(), count);
+		}
 	}
 	
 	public static void printMarmotFilePrefix(MarmotRuntime marmot, String path, int count) {
