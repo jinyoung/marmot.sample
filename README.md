@@ -24,7 +24,8 @@ $ gradle assemble
 다음과 같은 내용의 `gradle.properties` 파일을 생성한다.
 <pre><code>distRepositoryDir=/home/xxx/marmot/dists
 </code></pre>
-여기서 `/home/xxx`는 사용자 홈디렉토리 경로명을 의미한다. 위 파일을 생성한 뒤 앞선 gradle 명령어를 사용하여 컴파일을 시도한다.
+여기서 `/home/xxx`는 사용자 홈디렉토리 경로명을 의미한다. 위 파일을 생성한 뒤 앞선 gradle 명령어를
+사용하여 컴파일을 다시 시도한다.
 
 Eclipse IDE를 이용하려는 경우 `eclipse` Gradle task를 수행시켜 Eclipse 프로젝트 import에
 필요한 `.project` 파일과 `.classpath` 파일을 생성시킨다.
