@@ -17,7 +17,7 @@ GitHub에서 `marmot.sample' 프로젝트를 download하고, 받은 zip 파일 (
 
 생성된 디렉토리로 이동하여 컴파일을 시도한다.
 <pre><code>$ cd marmot.sample
-$ gradle copyJarToBin
+$ gradle assemble
 </code></pre>
 
 Eclipse IDE를 이용하려는 경우 `eclipse` Gradle task를 수행시켜 Eclipse 프로젝트 import에
