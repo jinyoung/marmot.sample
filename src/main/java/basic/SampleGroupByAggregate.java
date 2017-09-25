@@ -7,6 +7,7 @@ import static marmot.optor.AggregateFunction.MIN;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.RemoteMarmotConnector;
@@ -43,16 +44,22 @@ public class SampleGroupByAggregate {
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
+		
+		DataSet input = marmot.getDataSet(INPUT);
+		String geomCol = input.getGeometryColumn();
+		String srid = input.getSRID();
 
 		Plan plan = marmot.planBuilder("group_by")
 							.load(INPUT)
 							.groupBy("sig_cd")
 								.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"))
-							.storeMarmotFile(RESULT)
+							.store(RESULT)
 							.build();
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		marmot.deleteDataSet(RESULT);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
+		watch.stop();
 
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
+		SampleUtils.printPrefix(result, 10);
+		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}
 }

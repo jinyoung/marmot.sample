@@ -2,23 +2,23 @@ package basic;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.geo.GeoJsonRecordSetWriter;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
 
+
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleSort {
-	private static final String INPUT = "POI/주유소_가격";
-	private static final String RESULT = "tmp/result";
+public class SampleExportGeoJson {
+	private static final String INPUT = "교통/지하철/서울역사";
+	private static final String OUTPUT = "data/test.gjson";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -41,20 +41,13 @@ public class SampleSort {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
-		DataSet input = marmot.getDataSet(INPUT);
-		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
-
-		Plan plan = marmot.planBuilder("sample_aggreate")
-							.load(INPUT)
-							.sort("휘발유:D")
-							.store(RESULT)
-							.build();
-		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
+		DataSet ds = marmot.getDataSet(INPUT);
+		long ncount = GeoJsonRecordSetWriter.into(OUTPUT)
+											.prettyPrinter(true)
+											.write(ds);
 		watch.stop();
-
-		SampleUtils.printPrefix(result, 10);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		
+		System.out.printf("written %d records into %s, elapsed=%s%n",
+							ncount, OUTPUT, watch.getElapsedTimeString());
 	}
 }

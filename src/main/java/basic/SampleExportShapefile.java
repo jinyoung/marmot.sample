@@ -47,8 +47,9 @@ public class SampleExportShapefile {
 																	.srid(ds.getSRID())
 																	.charset("euc-kr");
 		long ncount = writer.write(ds);
+		watch.stop();
 		
 		System.out.printf("written %d records into %s, elapsed=%s%n",
-							ncount, OUTPUT, watch.stopAndGetElpasedTimeString());
+							ncount, OUTPUT, watch.getElapsedTimeString());
 	}
 }

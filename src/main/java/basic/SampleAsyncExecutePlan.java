@@ -2,7 +2,6 @@ package basic;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.DataSet;
 import marmot.Plan;
 import marmot.PlanExecution;
 import marmot.RecordSchema;
@@ -37,8 +36,6 @@ public class SampleAsyncExecutePlan {
 		MarmotClient marmot = connector.connect(host, port);
 
 		marmot.deleteDataSet("tmp/result");
-		
-		DataSet ds;
 
 		// 1. 실행시킬 Plan 객체 생성.
 		Plan plan = marmot.planBuilder("test")

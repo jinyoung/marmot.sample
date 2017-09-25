@@ -54,7 +54,9 @@ public class SampleAssignUid {
 							.build();
 		marmot.deleteDataSet(RESULT);
 		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
+		watch.stop();
 
 		SampleUtils.printPrefix(result, 10);
+		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}
 }

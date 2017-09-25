@@ -12,7 +12,6 @@ import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.StopWatch;
 
 /**
  * 
@@ -33,8 +32,6 @@ public class PrintCatalog {
 
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
-		
-		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
@@ -61,7 +58,7 @@ public class PrintCatalog {
 		}
 		
 		// 특정 이름의 레이어의 등록정보를 접근
-		DataSet info = marmot.getDataSet("교통/지하철/서울역사");
+		DataSet ds = marmot.getDataSet("교통/지하철/서울역사");
 		
 		// 카다로그에 등록된 모든 폴더를 접근한다.
 		List<String> folders = marmot.getDirAll();
@@ -69,7 +66,7 @@ public class PrintCatalog {
 			System.out.println("Dir: " + folder);
 			
 			// 폴더에 저장된 레이어의 등록정보를 접근한다.
-			List<DataSet> infos = marmot.getDataSetAllInDir(folder, false);
+			List<DataSet> datasets = marmot.getDataSetAllInDir(folder, false);
 			
 			// 폴더에 등록된 하위 폴더를 접근한다.
 			List<String> subDirs = marmot.getSubDirAll(folder, false);

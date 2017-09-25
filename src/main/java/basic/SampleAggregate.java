@@ -53,7 +53,9 @@ public class SampleAggregate {
 							.build();
 		marmot.deleteFile(RESULT);
 		marmot.execute(plan);
+		watch.stop();
 		
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
+		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}
 }

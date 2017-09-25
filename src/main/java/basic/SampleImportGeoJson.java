@@ -1,11 +1,14 @@
 package basic;
 
+import java.io.File;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.geo.GeoJsonRecordSet;
+import marmot.geo.GeoJsonRecordSetReader;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -16,9 +19,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleSort {
-	private static final String INPUT = "POI/주유소_가격";
-	private static final String RESULT = "tmp/result";
+public class SampleImportGeoJson {
+	private static final File INPUT = new File("data/test.gjson");
+	private static final String OUTPUT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -41,20 +44,21 @@ public class SampleSort {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
-		DataSet input = marmot.getDataSet(INPUT);
-		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
-
-		Plan plan = marmot.planBuilder("sample_aggreate")
-							.load(INPUT)
-							.sort("휘발유:D")
-							.store(RESULT)
-							.build();
-		marmot.deleteDataSet(RESULT);
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan);
+		DataSet ds;
+		GeoJsonRecordSetReader reader = GeoJsonRecordSetReader.from(INPUT)
+																.srid("EPSG:5186");
+		try ( GeoJsonRecordSet rset = reader.read() ) {
+			marmot.deleteDataSet(OUTPUT);
+			ds = marmot.createDataSet(OUTPUT, rset.getRecordSchema(), "the_geom", rset.getSRID());
+			ds.append(rset);
+		}
 		watch.stop();
 
-		SampleUtils.printPrefix(result, 10);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		SampleUtils.printPrefix(ds, 5);
+		System.out.printf("import records from %s into %s, elapsed=%s%n",
+							INPUT.getAbsolutePath(), ds.getId(),
+							watch.stopAndGetElpasedTimeString());
+		
+		marmot.disconnect();
 	}
 }

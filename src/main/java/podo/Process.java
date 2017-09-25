@@ -4,6 +4,7 @@ import static marmot.optor.AggregateFunction.UNION;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -11,7 +12,7 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.geo.StoreAsGeoJson;
+import marmot.geo.GeoJsonRecordSetWriter;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -64,15 +65,10 @@ public class Process {
 		System.out.printf("elapsed time=%s%n", s_watch.getElapsedTimeString());
 	}
 	
-	private static void export(MarmotClient marmot, DataSet ds, File file) {
+	private static void export(MarmotClient marmot, DataSet ds, File file) throws IOException {
 		StopWatch watch = StopWatch.start();
 		System.out.printf("결과파일 생성: %s...", file.getAbsolutePath());
-		StoreAsGeoJson store = StoreAsGeoJson.builder()
-											.file(file)
-											.geometryColumn(ds.getGeometryColumn())
-//											.charset("euc-kr")
-											.build();
-		ds.apply(store);
+		GeoJsonRecordSetWriter.into(file.getAbsolutePath()).write(ds);
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}
 	

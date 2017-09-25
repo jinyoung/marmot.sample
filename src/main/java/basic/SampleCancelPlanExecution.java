@@ -39,8 +39,6 @@ public class SampleCancelPlanExecution {
 		MarmotClient marmot = connector.connect(host, port);
 
 		marmot.deleteDataSet("tmp/result");
-		
-		DataSet ds;
 
 		// 1. 실행시킬 Plan 객체 생성.
 		Plan plan = marmot.planBuilder("test")
